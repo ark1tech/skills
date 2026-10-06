@@ -471,8 +471,6 @@ mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
 .note-quote { font-size: 14.5px; line-height: 1.5; color: var(--text); border-left: 3px solid var(--hl-note); padding-left: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .note-text { font-size: 14.5px; line-height: 1.5; color: var(--fg); white-space: pre-wrap; }
 .notes-empty { padding: 28px 22px; color: var(--muted); font-size: 15px; line-height: 1.6; }
-.panel-foot { padding: 14px 22px 18px; border-top: 1px solid var(--line-soft); display: grid; gap: 10px; font-size: 13px; line-height: 1.5; color: var(--muted); }
-.panel-foot .pill-btn { justify-self: start; }
 @media (prefers-reduced-motion: reduce) { .notes-panel { transition: none; } }
 
 /* Draft drawer: rich notes at the bottom of the page */
@@ -744,9 +742,6 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
 <aside class="notes-panel" id="notes-panel" aria-label="Highlights and comments">
   <div class="panel-head"><b>Comments <span class="notes-count">0</span></b><button type="button" class="pill-btn copy-all" title="Copy every highlight and comment with this file's path, to paste into an AI agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg><span>Copy</span></button><button type="button" class="icon-btn notes-toggle" aria-controls="notes-panel" title="Close comments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="sr">Close comments</span></button></div>
   <ol class="notes-list"></ol>
-  <div class="panel-foot">
-    <button type="button" class="pill-btn save-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/></svg>Save into file</button>
-  </div>
 </aside>
 
 <aside class="drawer" id="drawer" aria-label="Your notes">
