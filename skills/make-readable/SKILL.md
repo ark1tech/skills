@@ -30,7 +30,7 @@ Turns an explanation into one `.html` file that reads like a long-form blog post
 
 Copy the template with `cp`; don't retype it. Edit only inside `<div class="content">`, plus `<title>`, `{{SHORT_NAME}}` and the `#readable-glossary` block. Leave the `<style>`, rail, navbar, floating UI, notes panel and scripts untouched unless the user asks for a design change.
 
-**Updating a readable that already exists:** edit sections in place. Never regenerate the file from the template, and never touch `<script type="application/json" id="readable-notes">`. That block holds the user's saved highlights, comments and notes. Highlights and passage references re-anchor to the edited text on their own. Rerun the glossary gate after every edit. If the file predates the glossary, copy the Glossary chip, `#gloss-pop`, `#readable-glossary`, the glossary CSS and the glossary script from the template into it.
+**Updating a readable that already exists:** edit sections in place. Never regenerate the file from the template, and never touch `<script type="application/json" id="readable-notes">`. That block holds the user's saved highlights, comments, notes and glossary-term notes. Renaming a glossary term orphans the notes kept on it, so keep `term` stable. Highlights and passage references re-anchor to the edited text on their own. Rerun the glossary gate after every edit. If the file predates the glossary, copy the Glossary chip, `#gloss-pop`, `#term-dialog`, `#readable-glossary`, the `--scrim` tokens, the glossary CSS and the glossary script from the template into it.
 
 ## Page anatomy
 
@@ -75,7 +75,7 @@ Layout rules:
 
 ## Glossary
 
-Every readable has a glossary. It is not part of the content: the terms live in the `#readable-glossary` JSON block, and the reader opens them from the **Glossary** chip in the navbar, searches, and selects a term to read its whole definition.
+Every readable has a glossary. It is not part of the content: the terms live in the `#readable-glossary` JSON block, and the reader opens them from the **Glossary** chip in the navbar, searches, and opens a term to read its whole definition, keep notes on it, or search the web for it.
 
 ```html
 <script type="application/json" id="readable-glossary">[
@@ -175,7 +175,11 @@ Encoding table, every primitive's markup, connector syntax, charts, ink SVG, mot
     - Comments go in as a quote block: the passage, a chip back to its section, and the comment.
   - **Notes** on the selection bar (next to Highlight and Comment) highlights the passage and quotes it into the notes with a link back.
   - **Storage:** paste is plain text only. The notes live as HTML in `data.draft` in the same JSON block, so they autosave and goes into the file with Save.
-- **Glossary:** the Glossary chip (left of Save) shows how many terms the page defines and opens a search box over them. Typing filters by term, spelled-out form and definition, with term matches first. The top match opens its whole definition; ↑/↓ move between terms, a click opens one, and Esc closes the popover. The terms are the page's own `#readable-glossary` block, so Save never changes them.
+- **Glossary:** the Glossary chip (left of Save) shows how many terms the page defines and opens a search box over them.
+  - Typing filters by term, spelled-out form and definition, with term matches first. ↑/↓ preview each term's whole definition in the list.
+  - A click or Enter opens the term in a centred dialog: the definition, a **Your notes** box, and a button that searches "what is <term>" on the reader's chosen engine (Google, Bing, DuckDuckGo, Brave, Kagi or Perplexity; Google by default, remembered as `readable-search`). Esc, the close button or a click on the backdrop closes it and returns to the search.
+  - Term notes autosave and go into the file with Save, like comments (`data.terms` in `#readable-notes`, keyed by the term). Terms with notes show a small amber marker in the list.
+  - The terms themselves are the page's `#readable-glossary` block, so Save never changes them.
 - **Chart lookups:** hover, tap or arrow-key through any chart to see the exact values at each point, in a card next to a guide line (line charts) or a lit column (bar charts).
 - **Accessibility:** visible focus rings, Escape closes popovers and the panel, and `prefers-reduced-motion` turns off the slides. Contents links and Notes jumps move to the target instantly (no smooth scroll); keep it that way.
 

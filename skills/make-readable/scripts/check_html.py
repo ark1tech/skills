@@ -9,7 +9,7 @@ import sys
 from html.parser import HTMLParser
 
 VOID = {"meta", "link", "br", "hr", "img", "input", "source", "wbr"}
-REQUIRED = ["#rail", "#sel-bar", "#note-pop", "#notes-panel", "#readable-notes", "#readable-glossary", "#gloss-pop", "#drawer", "#draft-editor", "#ref-pop", ".navbar", ".theme-switch", ".gloss-toggle", ".content", ".toc"]
+REQUIRED = ["#rail", "#sel-bar", "#note-pop", "#notes-panel", "#readable-notes", "#readable-glossary", "#gloss-pop", "#term-dialog", "#drawer", "#draft-editor", "#ref-pop", ".navbar", ".theme-switch", ".gloss-toggle", ".content", ".toc"]
 # Text inside these is markup or identifiers, not prose a reader needs defined.
 NOT_PROSE = {"script", "style", "code", "pre", "kbd"}
 # Two or more capitals in one all-caps run (SLA, B2B, HANA), with an optional plural "s".
