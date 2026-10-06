@@ -574,7 +574,8 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
 .term-head .gloss-term b { font-size: 22px; line-height: 1.25; letter-spacing: -.01em; }
 .term-head .gloss-term em { font-size: 14.5px; }
 .term-def { margin: 0 6px 0 0; font-size: 16px; line-height: 1.6; color: var(--fg); }
-.term-label { margin-top: 6px; font: 500 11.5px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
+.term-notes-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.term-label { font: 500 11.5px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
 .term-dialog textarea { min-height: 120px; }
 .term-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .term-search { min-width: 0; max-width: 100%; text-decoration: none; }
@@ -587,7 +588,6 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
 .term-engine select:hover { background: var(--card-2); color: var(--fg); }
 .term-engine select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .term-engine svg { position: absolute; right: 11px; top: 50%; width: 13px; height: 13px; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
-.term-status { margin-left: auto; }
 @media (max-width: 1080px) { .drawer { left: 0; } }
 @media (max-width: 600px) {
   .drawer-head { gap: 8px; padding-left: 10px; }
@@ -779,7 +779,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
       <button type="button" class="icon-btn term-close" title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="sr">Close</span></button>
     </div>
     <p class="term-def"></p>
-    <label class="term-label" for="term-notes">Your notes</label>
+    <div class="term-notes-head"><label class="term-label" for="term-notes">Your notes</label><span class="term-status" aria-live="polite">Autosaves</span></div>
     <textarea id="term-notes" placeholder="Add your own notes on this term…"></textarea>
     <div class="term-foot">
       <a class="pill-btn term-search" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search</span></a>
@@ -791,7 +791,6 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
         <option value="kagi" data-url="https://kagi.com/search?q=">Kagi</option>
         <option value="perplexity" data-url="https://www.perplexity.ai/search?q=">Perplexity</option>
       </select><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></label>
-      <span class="term-status" aria-live="polite">Autosaves</span>
     </div>
   </div>
 </dialog>
