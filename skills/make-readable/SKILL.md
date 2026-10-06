@@ -165,6 +165,7 @@ Encoding table, every primitive's markup, connector syntax, charts, ink SVG, mot
   - Select text and a floating bar offers Highlight, Comment, Notes or Copy. Click a highlight to edit its comment or remove it.
   - **Copy** puts one line on the clipboard for pasting into an AI agent ahead of a question: the exact selection, the element it sits in, its section, and the file's absolute path with the section anchor, e.g. `["Solution one-liner." in <li> in section 04 "What AWS is asking for" (at /Users/…/brief.html#asks)]`. The agent finds the spot by searching the file for the quote.
   - The **Comments** panel (navbar) lists every highlight and comment by section; clicking one jumps to it.
+  - The panel's **Copy** button copies every highlight the same way, in page order, each followed by `Comment: …` when it has one, so the whole review can go to an agent at once.
   - Each note is stored as its exact quote plus 32 characters on either side, so it re-anchors after edits. Notes it can't place show as "Text not found".
 - **Saving:** notes autosave to `localStorage` under `readable-notes:<path>`.
   - **Save** writes them into the `#readable-notes` JSON block of the same file. Chrome and Edge use the save dialog (pick the same file once per session). Other browsers download a copy.

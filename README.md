@@ -20,7 +20,7 @@ Turns an explanation, briefing or onboarding doc into one offline HTML page that
 - wide tables, plus diagrams and charts composed from primitives (flows, lanes, zones, bars, schedules, quadrants, a line and bar chart engine), drawn only where the shape of the information is the point
 - a Glossary chip in the navbar: search every acronym and jargon term on the page without cluttering the text, then open one to read its full definition, keep your own notes on it, or search the web for it
 - highlights, comments and a notes drawer with `@` references, all saved back into the same HTML file
-- a Copy button on any selection that copies the text with the file's path and section, ready to paste into an AI agent with your question
+- Copy buttons, on any selection and on the Comments panel, that copy the text (or every highlight and comment) with the file's path and section, ready to paste into an AI agent with your question
 
 `scripts/check_html.py` checks structure, dead anchors, figure labels, chart data and external resources, and enforces the glossary: every acronym in the content needs an entry, and every entry must be used. [`examples/figures.html`](skills/make-readable/examples/figures.html) shows what the primitives can make.
 

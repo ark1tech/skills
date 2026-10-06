@@ -458,6 +458,8 @@ mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
 .notes-open .notes-panel { transform: none; visibility: visible; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 14px 14px 22px; border-bottom: 1px solid var(--line-soft); }
 .panel-head b { color: var(--fg); font-weight: 600; font-size: 16px; }
+.panel-head .copy-all { margin-right: auto; padding: 6px 11px; }
+.copy-all:disabled { opacity: .4; pointer-events: none; }
 .notes-list { list-style: none; margin: 0; padding: 10px; overflow-y: auto; flex: 1; display: grid; align-content: start; gap: 4px; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 40%, transparent) transparent; }
 .notes-list li { margin: 0; }
 .note-item {
@@ -740,10 +742,9 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
 </div>
 
 <aside class="notes-panel" id="notes-panel" aria-label="Highlights and comments">
-  <div class="panel-head"><b>Comments <span class="notes-count">0</span></b><button type="button" class="icon-btn notes-toggle" aria-controls="notes-panel" title="Close comments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="sr">Close comments</span></button></div>
+  <div class="panel-head"><b>Comments <span class="notes-count">0</span></b><button type="button" class="pill-btn copy-all" title="Copy every highlight and comment with this file's path, to paste into an AI agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg><span>Copy</span></button><button type="button" class="icon-btn notes-toggle" aria-controls="notes-panel" title="Close comments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="sr">Close comments</span></button></div>
   <ol class="notes-list"></ol>
   <div class="panel-foot">
-    <span>Comments and notes autosave in this browser. Save writes them into this HTML file so they travel with it.</span>
     <button type="button" class="pill-btn save-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/></svg>Save into file</button>
   </div>
 </aside>
@@ -1264,6 +1265,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   function render() {
     var n = data.notes.length;
     document.querySelectorAll('.notes-count').forEach(function (el) { el.textContent = n; });
+    document.querySelector('.copy-all').disabled = !n;
     document.querySelectorAll('.save-file').forEach(function (b) { b.classList.toggle('dirty', (data.updatedAt || 0) > fileStamp); });
     list.textContent = '';
     if (!n) {
@@ -1365,12 +1367,23 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     var path = location.protocol === 'file:' ? decodeURIComponent(location.pathname).replace(/^\/([A-Za-z]:)/, '$1') : location.origin + location.pathname;
     return '[' + JSON.stringify(r.toString().replace(/\s+/g, ' ').trim()) + ' in ' + tag + ' ' + where + ' (at ' + path + anchor + ')]';
   }
-  function copyForAgent(btn) {
-    if (!pending) return;
+  function copyText(btn, text) {
     var label = btn.querySelector('span');
-    function show(text) { label.textContent = text; clearTimeout(btn._t); btn._t = setTimeout(function () { label.textContent = 'Copy'; }, 1400); }
-    navigator.clipboard.writeText(agentRef(pending)).then(function () { show('Copied'); }, function () { show('Copy failed'); });
+    function show(t) { label.textContent = t; clearTimeout(btn._t); btn._t = setTimeout(function () { label.textContent = 'Copy'; }, 1400); }
+    navigator.clipboard.writeText(text).then(function () { show('Copied'); }, function () { show('Copy failed'); });
   }
+  function copyForAgent(btn) { if (pending) copyText(btn, agentRef(pending)); }
+  // Every highlight in page order, each followed by its comment, ready to paste into an agent.
+  function copyAll(btn) {
+    if (!data.notes.length) return;
+    copyText(btn, data.notes.slice().sort(function (a, b) { return a.start - b.start; }).map(function (note) {
+      var ms = marks(note.id), r = document.createRange(), ref;
+      if (ms.length) { r.setStartBefore(ms[0]); r.setEndAfter(ms[ms.length - 1]); ref = agentRef(r); }
+      else ref = '[' + JSON.stringify(note.exact) + ' no longer found on the page]';
+      return ref + (note.comment && note.comment.trim() ? '\nComment: ' + note.comment.trim() : '');
+    }).join('\n\n'));
+  }
+  document.querySelector('.copy-all').addEventListener('click', function () { copyAll(this); });
 
   bar.addEventListener('mousedown', function (e) { e.preventDefault(); }); // keep the selection
   bar.addEventListener('click', function (e) {
@@ -1791,6 +1804,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     var gp = clone.querySelector('#gloss-pop'); gp.hidden = true; gp.removeAttribute('style'); gp.querySelector('.ref-list').textContent = '';
     gp.querySelector('input').removeAttribute('aria-activedescendant'); clone.querySelector('.gloss-toggle').setAttribute('aria-expanded', 'false');
     clone.querySelector('.notes-list').textContent = '';
+    clone.querySelectorAll('[data-act="copy"] span, .copy-all span').forEach(function (el) { el.textContent = 'Copy'; });
     clone.querySelector('#note-text').textContent = '';
     clone.querySelector('#readable-notes').textContent = JSON.stringify(data).replace(/</g, '\\u003c');
     return '<!doctype html>\n' + clone.outerHTML + '\n';
