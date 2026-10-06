@@ -440,6 +440,7 @@ mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
 .sel-bar button:hover, .pop-actions button:hover { background: var(--card-2); }
 .sel-bar svg { width: 16px; height: 16px; }
 .note-pop { width: min(340px, calc(100vw - 32px)); padding: 12px; display: grid; gap: 10px; }
+.note-pop:focus { outline: none; }
 .note-pop textarea, .term-dialog textarea {
   width: 100%; min-height: 92px; resize: vertical; padding: 10px 12px; border-radius: 10px;
   border: 1px solid var(--line); background: var(--bg); color: var(--fg); font: 15px/1.5 var(--sans);
@@ -728,7 +729,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <button type="button" data-act="draft" title="Quote into your notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Notes</button>
 </div>
 
-<div class="floating note-pop" id="note-pop" role="dialog" aria-label="Comment" hidden>
+<div class="floating note-pop" id="note-pop" role="dialog" aria-label="Comment" tabindex="-1" hidden>
   <textarea id="note-text" placeholder="Add a comment…" aria-label="Comment"></textarea>
   <div class="pop-actions">
     <button type="button" class="danger" data-act="delete">Remove highlight</button>
@@ -1324,7 +1325,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     if (!note || !m) return;
     activeId = id; area.value = note.comment || '';
     place(pop, m.getBoundingClientRect(), true);
-    area.focus({ preventScroll: true });
+    pop.focus({ preventScroll: true }); // focus the popover, not the box, so nothing is preselected; Tab reaches it
   }
   function closePop() {
     if (!activeId) return;
