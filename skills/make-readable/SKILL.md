@@ -104,7 +104,7 @@ Every readable has a glossary. It is not part of the content: the terms live in 
    - says how the page uses the term when that differs from the textbook meaning
 4. Remove entries for terms the page no longer uses.
 
-`check_html.py` enforces the mechanical half. The block must be valid and non-empty, every all-caps acronym in the content must have an entry, and every entry's term must appear on the page. It can't detect jargon; step 1 covers that.
+`check_html.py` enforces the mechanical half. The block must be valid and non-empty, every all-caps acronym in the content must have an entry, and every entry's term must appear on the page. It skips quoted text (someone else's words) and all-caps styling of a word the page also writes in lower case ("SWARM"). It can't detect jargon; step 1 covers that, and it covers acronyms inside quotes too.
 
 ## Figures: draw only what needs drawing
 

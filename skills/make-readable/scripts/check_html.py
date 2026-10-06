@@ -6,12 +6,13 @@ Prints OK, or one line per problem and exits 1.
 import json
 import re
 import sys
+from html import unescape
 from html.parser import HTMLParser
 
 VOID = {"meta", "link", "br", "hr", "img", "input", "source", "wbr"}
 REQUIRED = ["#rail", "#sel-bar", "#note-pop", "#notes-panel", "#readable-notes", "#readable-glossary", "#gloss-pop", "#term-dialog", "#drawer", "#draft-editor", "#ref-pop", ".navbar", ".theme-switch", ".gloss-toggle", ".content", ".toc"]
-# Text inside these is markup or identifiers, not prose a reader needs defined.
-NOT_PROSE = {"script", "style", "code", "pre", "kbd"}
+# Text inside these is markup, identifiers or someone else's verbatim words, not prose the page needs to define.
+NOT_PROSE = {"script", "style", "code", "pre", "kbd", "blockquote", "q"}
 # Two or more capitals in one all-caps run (SLA, B2B, HANA), with an optional plural "s".
 ACRONYM = re.compile(r"\b(?=[A-Z0-9]*[A-Z][A-Z0-9]*[A-Z])[A-Z0-9]+(?=s?\b)")
 
@@ -80,6 +81,8 @@ class Page(HTMLParser):
 
 def check_glossary(html, text):
     """The glossary must exist, cover every acronym in the content, and define only terms the page uses."""
+    body = re.search(r'<div class="content">(.*)</main>', html, re.S)
+    used = unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style)\b.*?</\1>", " ", body.group(1) if body else "", flags=re.S)))  # code included
     m = re.search(r'<script type="application/json" id="readable-glossary">(.*?)</script>', html, re.S)
     if not m:
         return []  # the REQUIRED check already reports the missing block
@@ -98,10 +101,12 @@ def check_glossary(html, text):
         if term.lower() in seen:
             problems.append(f"glossary defines {term!r} twice")
         seen.add(term.lower())
-        covered.update(re.findall(r"[A-Za-z0-9]+", f"{term} {full}"))
-        if "{{" not in term and not any(re.search(r"(?<!\w)" + re.escape(w), text, re.I) for w in (term, full) if w):
+        covered.update(w.lstrip("0123456789") for w in re.findall(r"[A-Za-z0-9]+", f"{term} {full}"))
+        if "{{" not in term and not any(re.search(r"(?<![A-Za-z])" + re.escape(w), used, re.I) for w in (term, full) if w):
             problems.append(f"glossary term {term!r} never appears on the page; remove it or use it")
-    missing = sorted({a for a in ACRONYM.findall(text) if a not in covered})
+    words = {w.lower() for w in re.findall(r"[A-Za-z]+", text) if not w.isupper()}
+    # "6TB" and "S/4HANA" check as TB and HANA; an all-caps word the page also writes in lower case ("SWARM", "ALL") is styling, not an acronym.
+    missing = sorted({a for a in (t.lstrip("0123456789") for t in ACRONYM.findall(text)) if a not in covered and a.lower() not in words})
     if missing:
         problems.append("acronyms missing from the glossary: " + ", ".join(missing))
     return problems
