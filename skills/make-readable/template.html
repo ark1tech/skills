@@ -567,6 +567,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); padding: 0; overflow-y: auto;
   border: 1px solid var(--line); border-radius: 20px; background: var(--card); color: var(--text); box-shadow: var(--shadow);
 }
+.term-dialog:focus { outline: none; }
 .term-dialog::backdrop { background: var(--scrim, rgba(0, 0, 0, .4)); }
 .term-card { display: grid; gap: 14px; padding: 18px 18px 18px 24px; }
 .term-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
@@ -772,7 +773,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <div class="ref-list" id="gloss-list" role="listbox" aria-label="Terms"></div>
 </div>
 
-<dialog class="term-dialog" id="term-dialog" aria-labelledby="term-title">
+<dialog class="term-dialog" id="term-dialog" aria-labelledby="term-title" tabindex="-1">
   <div class="term-card">
     <div class="term-head">
       <div class="gloss-term"><b id="term-title"></b><em></em></div>
@@ -1898,8 +1899,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     termNotes.value = data.terms[t.term] || '';
     termStatus.textContent = 'Autosaves';
     syncSearch();
-    termDialog.showModal();
-    if (matchMedia('(pointer: fine)').matches) termNotes.focus(); // no on-screen keyboard over the definition on phones
+    termDialog.showModal(); termDialog.focus(); // focus the dialog, not a control, so nothing is preselected; Tab reaches the notes
   }
   termNotes.addEventListener('input', function () { termStatus.textContent = 'Saving…'; clearTimeout(termTimer); termTimer = setTimeout(saveTermNote, 400); });
   engineSel.addEventListener('change', function () { syncSearch(); try { localStorage.setItem('readable-search', engineSel.value); } catch (e) {} });
