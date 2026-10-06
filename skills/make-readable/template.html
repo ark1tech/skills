@@ -438,7 +438,7 @@ mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
   display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border-radius: 10px; font: 500 13.5px/1 var(--sans);
 }
 .sel-bar button:hover, .pop-actions button:hover { background: var(--card-2); }
-.sel-bar svg { width: 16px; height: 16px; }
+.sel-bar svg, .pop-actions svg { width: 16px; height: 16px; }
 @media (max-width: 600px) { .sel-bar button { gap: 5px; padding-inline: 7px; } } /* four labelled buttons fit a 390px screen */
 .note-pop { width: min(340px, calc(100vw - 32px)); padding: 12px; display: grid; gap: 10px; }
 .note-pop:focus { outline: none; }
@@ -449,6 +449,7 @@ mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
 .note-pop textarea:focus, .term-dialog textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .pop-actions { display: flex; justify-content: space-between; gap: 8px; }
 .pop-actions .danger { color: var(--bad); }
+.pop-actions [data-act="done"] { margin-left: auto; }
 .notes-panel {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 30; width: min(400px, 100vw);
   display: flex; flex-direction: column; background: var(--rail); border-left: 1px solid var(--line);
@@ -735,7 +736,8 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
 <div class="floating note-pop" id="note-pop" role="dialog" aria-label="Comment" tabindex="-1" hidden>
   <textarea id="note-text" placeholder="Add a comment…" aria-label="Comment"></textarea>
   <div class="pop-actions">
-    <button type="button" class="danger" data-act="delete">Remove highlight</button>
+    <button type="button" class="danger" data-act="delete" title="Remove this highlight and its comment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg><span>Remove</span></button>
+    <button type="button" data-act="copy" title="Copy this highlight and its comment with this file's path, to paste into an AI agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg><span>Copy</span></button>
     <button type="button" data-act="done">Done</button>
   </div>
 </div>
@@ -1356,6 +1358,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   pop.addEventListener('click', function (e) {
     var act = e.target.closest('button') && e.target.closest('button').dataset.act;
     if (act === 'done') closePop();
+    if (act === 'copy' && activeId) copyText(e.target.closest('button'), noteRef(find(activeId)));
     if (act === 'delete' && activeId) {
       unwrap(activeId);
       data.notes = data.notes.filter(function (n) { return n.id !== activeId; });
@@ -1383,16 +1386,17 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     navigator.clipboard.writeText(text).then(function () { show('Copied'); }, function () { show('Copy failed'); });
   }
   function copyForAgent(btn) { if (pending) copyText(btn, agentRef(pending)); }
-  // Every highlight shown in the panel, in page order, each followed by its comment, ready to paste into an agent.
+  // A saved highlight as an agent reference, followed by its comment.
+  function noteRef(note) {
+    var ms = marks(note.id), r = document.createRange(), ref;
+    if (ms.length) { r.setStartBefore(ms[0]); r.setEndAfter(ms[ms.length - 1]); ref = agentRef(r); }
+    else ref = '[' + JSON.stringify(note.exact) + ' no longer found on the page]';
+    return ref + (note.comment && note.comment.trim() ? '\nComment: ' + note.comment.trim() : '');
+  }
+  // Every highlight shown in the panel, in page order, ready to paste into an agent.
   function copyAll(btn) {
     var notes = visibleNotes();
-    if (!notes.length) return;
-    copyText(btn, notes.map(function (note) {
-      var ms = marks(note.id), r = document.createRange(), ref;
-      if (ms.length) { r.setStartBefore(ms[0]); r.setEndAfter(ms[ms.length - 1]); ref = agentRef(r); }
-      else ref = '[' + JSON.stringify(note.exact) + ' no longer found on the page]';
-      return ref + (note.comment && note.comment.trim() ? '\nComment: ' + note.comment.trim() : '');
-    }).join('\n\n'));
+    if (notes.length) copyText(btn, notes.map(noteRef).join('\n\n'));
   }
   document.querySelector('.copy-all').addEventListener('click', function () { copyAll(this); });
   query.addEventListener('input', render);
