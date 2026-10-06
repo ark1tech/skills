@@ -162,7 +162,8 @@ Encoding table, every primitive's markup, connector syntax, charts, ink SVG, mot
 - **Contents rail:** sticky and collapsible (the panel icon in the rail, or in the navbar when collapsed). Its state is remembered as `readable-rail`. The scrollbar is thin and only shows on hover. The current section is highlighted in the rail and named in the navbar.
 - **Section picker:** the section name in the navbar breadcrumb is a button. It opens a scrollable list of every section with the current one centred and bold. Pick with the mouse or ↑/↓/Enter (Esc closes) to jump there instantly. The navbar and rail are not text-selectable, because selecting there autoscrolled the page.
 - **Highlights and comments:**
-  - Select text and a floating bar offers Highlight, Comment or Notes. Click a highlight to edit its comment or remove it.
+  - Select text and a floating bar offers Highlight, Comment, Notes or Copy. Click a highlight to edit its comment or remove it.
+  - **Copy** puts one line on the clipboard for pasting into an AI agent ahead of a question: the exact selection, the element it sits in, its section, and the file's absolute path with the section anchor, e.g. `["Solution one-liner." in <li> in section 04 "What AWS is asking for" (at /Users/…/brief.html#asks)]`. The agent finds the spot by searching the file for the quote.
   - The **Comments** panel (navbar) lists every highlight and comment by section; clicking one jumps to it.
   - Each note is stored as its exact quote plus 32 characters on either side, so it re-anchors after edits. Notes it can't place show as "Text not found".
 - **Saving:** notes autosave to `localStorage` under `readable-notes:<path>`.
