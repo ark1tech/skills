@@ -471,6 +471,7 @@ mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
 .note-quote { font-size: 14.5px; line-height: 1.5; color: var(--text); border-left: 3px solid var(--hl-note); padding-left: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .note-text { font-size: 14.5px; line-height: 1.5; color: var(--fg); white-space: pre-wrap; }
 .notes-empty { padding: 28px 22px; color: var(--muted); font-size: 15px; line-height: 1.6; }
+.gloss-search.notes-search { padding: 2px 22px 4px; border-bottom: 0; border-top: 1px solid var(--line-soft); }
 @media (prefers-reduced-motion: reduce) { .notes-panel { transition: none; } }
 
 /* Draft drawer: rich notes at the bottom of the page */
@@ -740,8 +741,9 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
 </div>
 
 <aside class="notes-panel" id="notes-panel" aria-label="Highlights and comments">
-  <div class="panel-head"><b>Comments <span class="notes-count">0</span></b><button type="button" class="pill-btn copy-all" title="Copy every highlight and comment with this file's path, to paste into an AI agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg><span>Copy</span></button><button type="button" class="icon-btn notes-toggle" aria-controls="notes-panel" title="Close comments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="sr">Close comments</span></button></div>
+  <div class="panel-head"><b>Comments <span class="notes-count">0</span></b><button type="button" class="pill-btn copy-all" title="Copy every highlight and comment shown, with this file's path, to paste into an AI agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg><span>Copy</span></button><button type="button" class="icon-btn notes-toggle" aria-controls="notes-panel" title="Close comments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="sr">Close comments</span></button></div>
   <ol class="notes-list"></ol>
+  <label class="gloss-search notes-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="notes-q" autocomplete="off" spellcheck="false" placeholder="Search highlights and comments" aria-label="Search highlights and comments"></label>
 </aside>
 
 <aside class="drawer" id="drawer" aria-label="Your notes">
@@ -1183,7 +1185,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   var bar = document.getElementById('sel-bar');
   var pop = document.getElementById('note-pop');
   var area = document.getElementById('note-text');
-  var list = document.querySelector('.notes-list');
+  var list = document.querySelector('.notes-list'), query = document.getElementById('notes-q');
 
   function parse(s) { try { return s ? JSON.parse(s) : null; } catch (e) { return null; } }
   var embedded = parse(document.getElementById('readable-notes').textContent) || { notes: [], updatedAt: 0 };
@@ -1257,10 +1259,18 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     var num = h.querySelector('.num');
     return (num ? num.textContent + ' · ' : '') + h.textContent.replace(num ? num.textContent : '', '').trim();
   }
+  // Notes in page order, narrowed by the panel's search to those whose quote, comment or section matches.
+  function visibleNotes() {
+    var q = query.value.trim().toLowerCase();
+    return data.notes.slice().sort(function (a, b) { return a.start - b.start; }).filter(function (note) {
+      return !q || [note.exact, note.comment || '', missing[note.id] ? '' : sectionLabel(note.id)].join('\n').toLowerCase().indexOf(q) >= 0;
+    });
+  }
   function render() {
     var n = data.notes.length;
     document.querySelectorAll('.notes-count').forEach(function (el) { el.textContent = n; });
-    document.querySelector('.copy-all').disabled = !n;
+    var notes = visibleNotes();
+    query.disabled = !n; document.querySelector('.copy-all').disabled = !notes.length;
     document.querySelectorAll('.save-file').forEach(function (b) { b.classList.toggle('dirty', (data.updatedAt || 0) > fileStamp); });
     list.textContent = '';
     if (!n) {
@@ -1268,7 +1278,12 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
       empty.textContent = 'Select any text on this page to highlight it or add a comment.';
       list.appendChild(empty); return;
     }
-    data.notes.slice().sort(function (a, b) { return a.start - b.start; }).forEach(function (note) {
+    if (!notes.length) {
+      var none = document.createElement('li'); none.className = 'notes-empty';
+      none.textContent = 'No highlights or comments match \u201c' + query.value.trim() + '\u201d.';
+      list.appendChild(none); return;
+    }
+    notes.forEach(function (note) {
       var li = document.createElement('li'), btn = document.createElement('button');
       btn.type = 'button'; btn.className = 'note-item'; btn.dataset.id = note.id;
       var sec = document.createElement('span'); sec.className = 'note-sec'; sec.textContent = missing[note.id] ? 'Text not found' : sectionLabel(note.id);
@@ -1368,10 +1383,11 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     navigator.clipboard.writeText(text).then(function () { show('Copied'); }, function () { show('Copy failed'); });
   }
   function copyForAgent(btn) { if (pending) copyText(btn, agentRef(pending)); }
-  // Every highlight in page order, each followed by its comment, ready to paste into an agent.
+  // Every highlight shown in the panel, in page order, each followed by its comment, ready to paste into an agent.
   function copyAll(btn) {
-    if (!data.notes.length) return;
-    copyText(btn, data.notes.slice().sort(function (a, b) { return a.start - b.start; }).map(function (note) {
+    var notes = visibleNotes();
+    if (!notes.length) return;
+    copyText(btn, notes.map(function (note) {
       var ms = marks(note.id), r = document.createRange(), ref;
       if (ms.length) { r.setStartBefore(ms[0]); r.setEndAfter(ms[ms.length - 1]); ref = agentRef(r); }
       else ref = '[' + JSON.stringify(note.exact) + ' no longer found on the page]';
@@ -1379,6 +1395,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     }).join('\n\n'));
   }
   document.querySelector('.copy-all').addEventListener('click', function () { copyAll(this); });
+  query.addEventListener('input', render);
 
   bar.addEventListener('mousedown', function (e) { e.preventDefault(); }); // keep the selection
   bar.addEventListener('click', function (e) {
