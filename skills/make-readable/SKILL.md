@@ -61,7 +61,7 @@ The rail, the inline contents and the `h2` numbers are generated from `main sect
 | A short process or flow (≤6 steps) | Step chips | `<ul class="steps"><li>A</li><li>B</li></ul>` |
 | Dated events in order | Timeline | `<ol class="timeline"><li><time>date · source</time>text</li></ol>`; `li.next` marks open or upcoming items |
 | Exact words someone said or wrote | Blockquote | `<blockquote><p>"…"</p><cite>who, where, date</cite></blockquote>` |
-| Your inference or recommendation, not a sourced fact | Derived callout | `<div class="callout"><div class="label-derived">My synthesis</div>…</div>` |
+| The agent's inference or recommendation, not a sourced fact | Derived callout | `<div class="callout"><div class="label-derived">Agent synthesis</div>…</div>` |
 | Caveat, conflict, name clash, easy mistake | Warning callout | `<div class="callout warn"><div class="eyebrow">Watch out</div>…</div>` |
 | File paths, identifiers, commands | Inline code | `<code>…</code>` |
 
