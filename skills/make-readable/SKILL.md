@@ -136,6 +136,8 @@ A figure has to earn its place: it should show something the text can't show as 
 - **Charts:** a line and bar engine with hover lookups.
 - **Ink SVG classes:** for any shape the others can't make.
 
+Keep figures spare: the `.fig-label` is one plain sentence, and every tag, sub-line and legend entry must add something the arrows and the surrounding text don't (figures.md, quality bar).
+
 Pick the relationship first, choose the primitives that encode it, and compose. Several primitives can share one figure. The gallery shows range, not a menu: don't force content into the nearest example.
 
 Rules:

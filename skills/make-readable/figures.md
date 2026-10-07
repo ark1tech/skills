@@ -29,7 +29,7 @@ Compose freely. A schedule can sit above a row of stats. A flow can use lanes an
 
 ```html
 <figure class="fig [bare] [animate]" aria-label="One-sentence summary of what the figure shows.">
-  <div class="fig-label">What this shows · unit or scope</div>   <!-- mono label; repeat it to title sub-parts -->
+  <div class="fig-label">One plain sentence saying what the figure shows, with the unit if any.</div>   <!-- a short title also works for a sub-part -->
   …primitives…
   <div class="fig-legend">…</div>                                <!-- whenever symbols need explaining -->
   <figcaption>Optional single sentence of context.</figcaption>
@@ -202,6 +202,7 @@ When no primitive fits (overlaps, funnels, radial diagrams, simple maps, a custo
 
 - **Gate:** draw only when the shape of the information carries meaning; otherwise keep text. About one figure per section that passes the gate.
 - **Takeaway:** the sentence before or after the figure states it.
-- **Labelling:** every figure has an `aria-label` summary and a `.fig-label`. Symbols get a legend; illustrative data is marked "sample".
+- **Labelling:** every figure has an `aria-label` summary and a `.fig-label`. The `.fig-label` is one plain sentence ("Demo B follows one exception from the alert to the planner's fix, with sample numbers."), never dot-separated fragments like "Demo B · one exception · sample numbers". Symbols get a legend; illustrative data says "sample" in that sentence.
+- **Every word earns its place:** a tag, sub-line or legend entry stays only if it tells the reader something the arrows, the label and the text around the figure don't. Cut step-number tags ("Beat 1", "1 · Data") when arrows already show the order, sub-lines that restate the label ("agentic" under "Inventory management") or repeat a table next to the figure, and legend entries for things a node already says in words ("Start here"). When in doubt, cut: six bare labels joined by arrows beat six boxes of three lines each.
 - **Size:** at most about 12 boxes per diagram; split bigger ones or zoom out. Keep one reading direction and labels of 1–4 words.
 - **Look once after building:** hidden chips, lines under boxes, clipped labels or a figure that scrolls on desktop all mean the layout needs to change.

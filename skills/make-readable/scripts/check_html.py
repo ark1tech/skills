@@ -157,6 +157,9 @@ def main(path):
     for cap in re.findall(r"<figcaption>(.*?)</figcaption>", html, re.S):
         if len(re.findall(r"\w\s=\s\w", cap)) >= 2:
             problems.append(f"figcaption reads like a key ({cap[:50]}…); use a .fig-legend instead")
+    for label in re.findall(r'<div class="fig-label">([^<]*)</div>', html):
+        if " · " in label:
+            problems.append(f"figure label {label!r} is dot-separated fragments; write one plain sentence saying what the figure shows")
     if "steps" in p.classes:
         problems.append('step chips (class="steps") are retired: draw a sequence of 3+ steps as a flow figure, or say two steps in a sentence')
     for tag, src in p.external:

@@ -219,7 +219,7 @@ footer { margin-top: 40px; font-size: 14px; color: var(--muted); }
 }
 .fig.bare { padding: 0; background: none; border: 0; overflow: visible; }
 .fig > figcaption { margin-top: 24px; max-width: 72ch; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
-.fig-label { margin: 0 0 24px; font: 500 12px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.fig-label { margin: 0 0 24px; font: 500 14.5px/1.45 var(--sans); color: var(--muted); }
 .flow + .fig-label { margin-top: 48px; }
 .fig-note { margin-top: 26px; font: 500 11.5px/1.7 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
 .fig-note b { display: block; font-weight: 500; color: var(--muted); }
@@ -630,7 +630,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>Parallel work that merges</h2>
   <p class="sub">Grid cells, stacked rows in a box, status icons, and a highlighted path.</p>
   <figure class="fig animate" aria-label="Two sources feed four parallel jobs that merge into one approval.">
-    <div class="fig-label">flow grid · node rows · status · hot path</div>
+    <div class="fig-label">Two sources feed four parallel jobs that merge into one approval.</div>
     <div class="flow" style="--cols:3">
       <div class="node" id="g-pos" style="--c:1;--r:1"><div class="nr"><i class="st"></i>POS sales<b>13s</b></div></div>
       <div class="node" id="g-erp" style="--c:1;--r:3"><div class="nr"><i class="st"></i>ERP stock<b>29s</b></div></div>
@@ -650,7 +650,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>Who does what, in order</h2>
   <p class="sub">Lanes (a row band spanning columns), a dashed optional step, and line labels.</p>
   <figure class="fig" aria-label="A sale in the store triggers a stockout check by the agents, which drafts a purchase order the buyer approves; an optional stock transfer can happen instead.">
-    <div class="fig-label">flow grid · lanes · column spans · dashed connector</div>
+    <div class="fig-label">A sale starts a stockout check that ends in a purchase order the buyer approves.</div>
     <div class="flow" style="--cols:5; column-gap:48px">
       <div class="lane" style="--c:1;--cs:5;--r:1"></div>
       <div class="lane" style="--c:1;--cs:5;--r:2"></div>
@@ -672,7 +672,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>A loop with a centre</h2>
   <p class="sub">The free canvas places boxes by percentage; smooth curves connect them in any direction.</p>
   <figure class="fig animate" data-curve="smooth" aria-label="Forecast, recommend, planner decides and measure form a loop that improves each cycle.">
-    <div class="fig-label">free canvas · smooth connectors · animate</div>
+    <div class="fig-label">Forecasting, recommending, deciding and measuring form one loop.</div>
     <div class="flow free" style="--h:360px">
       <div class="node" id="c1" style="--x:50;--y:12" data-from="c4"><div class="nr"><i class="gi gi-chart"></i>Forecast</div></div>
       <div class="node" id="c2" style="--x:84;--y:50" data-from="c1"><div class="nr"><i class="gi gi-doc"></i>Recommend</div></div>
@@ -687,7 +687,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>Layers of a system</h2>
   <p class="sub">Zones laid out as rows (<code>.zone.row</code>), with connectors between layers.</p>
   <figure class="fig" aria-label="Three layers: experience on top, agents in the middle, and data at the bottom; the agents chain from SAP data through to inventory.">
-    <div class="fig-label">zones as rows · one full-width column · vertical routing</div>
+    <div class="fig-label">The agents sit between the data and what people see.</div>
     <div class="flow" data-route="v" style="grid-template-columns:1fr; row-gap:44px">
       <div class="zone row" style="--r:1"><span class="zone-label">Experience</span>
         <div class="node" id="y-page" data-from="y-inv"><div class="nr"><i class="gi gi-doc"></i>Solution page</div></div>
@@ -743,7 +743,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>Phases on a time scale</h2>
   <p class="sub">A schedule track: bars from <code>--s</code> to <code>--e</code> on an <code>--n</code>-unit scale, plus milestone diamonds.</p>
   <figure class="fig animate" aria-label="A four-week assessment, then a pilot of up to twelve weeks, then rollout, with go/no-go at week four and production at week seventeen.">
-    <div class="fig-label">schedule · ghost bar · milestones · weeks</div>
+    <div class="fig-label">Assessment, pilot and rollout over twenty weeks, with two decision points.</div>
     <div class="gantt" style="--n:20">
       <div class="g-axis"><span style="--at:0">W0</span><span style="--at:4">W4</span><span style="--at:8">W8</span><span style="--at:12">W12</span><span style="--at:16">W16</span><span style="--at:20">W20</span></div>
       <div class="g-row"><span>Assessment</span><div class="g-track"><i style="--s:0;--e:4">4 wks · funded</i></div></div>
@@ -759,7 +759,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>Position on two dimensions</h2>
   <p class="sub">A 2×2: two axes, corner labels, and dots placed by <code>--x</code> and <code>--y</code> percent.</p>
   <figure class="fig animate" aria-label="Use cases plotted by effort and impact: invoice matching and forecasting are high impact, migration is high effort.">
-    <div class="fig-label">quadrant · dots · sample positions</div>
+    <div class="fig-label">Sample use cases placed by effort and impact.</div>
     <div class="quad" style="--h:340px">
       <span class="q-axis x">Effort →</span><span class="q-axis y">Impact →</span>
       <span class="q-zone tl">Quick wins</span><span class="q-zone tr">Big bets</span><span class="q-zone bl">Fill-ins</span><span class="q-zone br">Avoid</span>
@@ -776,7 +776,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>How big, and what it's made of</h2>
   <p class="sub">Magnitude and range bars, a composition bar with swatches, and stat tiles. Plain HTML, no chart engine.</p>
   <figure class="fig animate" aria-label="Reported impact ranges: lost sales up to 65 percent, spoilage 10 to 40 percent, safety stock 20 to 30 percent.">
-    <div class="fig-label">bars · ranges (--from → --v) · shared --max</div>
+    <div class="fig-label">Reported impact ranges, in percent.</div>
     <div class="bars" style="--max:70">
       <div class="brow"><span>Lost sales</span><i style="--v:65"></i><b>up to 65%</b></div>
       <div class="brow"><span>Spoilage</span><i style="--from:10;--v:40;--i:1"></i><b>10–40%</b></div>
@@ -784,12 +784,12 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     </div>
   </figure>
   <figure class="fig animate" aria-label="Forty-five days of inventory: fifteen at the distribution centre and thirty in store.">
-    <div class="fig-label">stack · composition of a whole</div>
+    <div class="fig-label">Where 45 days of inventory sit.</div>
     <div class="stack"><i style="--v:15;--c:var(--s1)" title="Distribution centre · 15 days"></i><i style="--v:30;--c:var(--s2);--i:1" title="Store · 30 days"></i></div>
     <div class="fig-legend"><span><i class="lg-sw" style="--c:var(--s1)"></i>Distribution centre · 15 days</span><span><i class="lg-sw" style="--c:var(--s2)"></i>Store · 30 days</span></div>
   </figure>
   <figure class="fig animate" aria-label="Three headline numbers: 40 percent fewer stockouts, review cut from 120 to 1.5 minutes, and 2,500 stores in scope.">
-    <div class="fig-label">stats · when a few numbers are the point</div>
+    <div class="fig-label">The three numbers that matter.</div>
     <div class="stats">
       <div class="stat hot"><b>−40%</b><span>stockouts</span><small>sample</small></div>
       <div class="stat" style="--i:1"><b>120 → 1.5</b><span>minutes of review per store per day</span><small>sample</small></div>
@@ -802,7 +802,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>Shapes the primitives can't make</h2>
   <p class="sub">Inline SVG with the ink classes (<code>.area .shape .stroke .dot .label .title .value</code>), which follow the theme.</p>
   <figure class="fig" aria-label="Venn: the overlap of consulting and engineering.">
-    <div class="fig-label">ink svg · overlapping areas</div>
+    <div class="fig-label">Where process consulting and engineering overlap.</div>
     <svg class="ink" viewBox="0 0 640 280" aria-hidden="true">
       <circle class="area" cx="255" cy="140" r="115" style="--c:var(--s1)"/>
       <circle class="area" cx="385" cy="140" r="115" style="--c:var(--s2)"/>
@@ -812,7 +812,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     </svg>
   </figure>
   <figure class="fig" aria-label="Funnel: 1,000 emails, 220 visits, 18 demos, 3 pilots.">
-    <div class="fig-label">ink svg · funnel · sample counts</div>
+    <div class="fig-label">How many people reach each stage, in sample counts.</div>
     <svg class="ink" viewBox="0 0 640 262" aria-hidden="true">
       <polygon class="area" points="20,10 620,10 540,64 100,64"/>
       <polygon class="area" points="100,72 540,72 470,126 170,126"/>
@@ -830,7 +830,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>Merges, filters and set logic</h2>
   <p class="sub">Smooth curves, glyph icons, sub-lines and labels on the lines.</p>
   <figure class="fig" data-curve="smooth" aria-label="Two group lists and two subscription lists are unioned, then intersected with records after the checkpoint, leaving 108, 121 and 129.">
-    <div class="fig-label">flow grid · smooth · chips · result node</div>
+    <div class="fig-label">How the four lists combine into the final counts.</div>
     <div class="flow" style="--cols:3">
       <div class="node" id="m-g1" style="--c:1;--r:1"><div class="nr"><i class="gi gi-users"></i>Group: engineering</div><small>104 · 108 · 121</small></div>
       <div class="node" id="m-g2" style="--c:1;--r:2"><div class="nr"><i class="gi gi-users"></i>Group: project-x</div><small>107 · 121 · 129</small></div>
@@ -849,11 +849,11 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <h2>Values over time</h2>
   <p class="sub">The chart engine takes JSON and gives hover, tap and arrow-key lookups.</p>
   <figure class="fig fig-chart animate" aria-label="Forecast error by week: the baseline stays near 22 percent while the model falls from 24 to 11 percent.">
-    <div class="fig-label">chart · line · two series</div>
+    <div class="fig-label">Forecast error by week, in percent.</div>
     <script type="application/json" class="chart-data">{"type":"line","x":["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12"],"y":{"min":0,"max":30,"ticks":3,"suffix":"%"},"series":[{"name":"Current baseline","values":[22,23,21,22,23,22,21,22,23,22,22,21]},{"name":"New model","values":[24,23,21,19,17,16,15,14,13,12,12,11]}]}</script>
   </figure>
   <figure class="fig fig-chart animate" aria-label="Stockouts per week fall from about 20 to near zero after the pilot starts in week 7.">
-    <div class="fig-label">chart · bar · event marker</div>
+    <div class="fig-label">Stockouts per week, before and after the pilot starts.</div>
     <script type="application/json" class="chart-data">{"type":"bar","x":["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12","W13","W14"],"y":{"ticks":3},"marker":{"x":"W7","label":"Pilot starts"},"series":[{"name":"Stockouts","values":[12,20,20,10,10,11,22,3,1,1,0,0,1,0]}]}</script>
   </figure>
 </section>
