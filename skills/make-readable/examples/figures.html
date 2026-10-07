@@ -207,9 +207,6 @@ td.num, .tab { font-variant-numeric: tabular-nums; }
 .timeline li.next::before { background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); }
 .timeline time { display: block; margin-bottom: 2px; font: 500 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .timeline li.next time { color: var(--accent); }
-.steps { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; list-style: none; padding: 0; }
-.steps li { margin: 0; font-size: 14.5px; line-height: 1.3; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--fg); }
-.steps li + li::before { content: "→ "; color: var(--faint); }
 hr { border: 0; border-top: 1px solid var(--line-soft); margin: 104px 0 0; }
 footer { margin-top: 40px; font-size: 14px; color: var(--muted); }
 
@@ -625,9 +622,8 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
 
 <section id="text-first" data-short="Kept as text">
   <h2>Kept as text</h2>
-  <p class="sub">The gate in practice: three linear steps don't need a figure.</p>
-  <p>The review has three steps, in order. Step chips carry it:</p>
-  <ul class="steps"><li>Discovery</li><li>Pilot</li><li>Rollout</li></ul>
+  <p class="sub">The gate in practice: two steps don't need a figure.</p>
+  <p>The review has two steps: a discovery week, then a pilot. One sentence carries it.</p>
 </section>
 
 <section id="grid-flow" data-short="Grid + connectors">

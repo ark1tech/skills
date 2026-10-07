@@ -59,7 +59,7 @@ The rail, the inline contents and the `h2` numbers are generated from `main sect
 | Rows that fall into groups | Group row | `<tr class="group"><td colspan="N">Group</td></tr>` |
 | Status of an item | Pill | `<span class="pill good|warn|bad">…</span>`, or plain `.pill` for neutral |
 | Numbers that should line up | Tabular figures | `<td class="num">` or `class="tab"` |
-| A short process or flow (≤6 steps) | Step chips | `<ul class="steps"><li>A</li><li>B</li></ul>` |
+| Steps, stages, phases or levels in order (3 or more) | Flow figure, never chips with arrows | `<figure class="fig">` with nodes and connectors in a `.flow` (see figures.md); a ladder or maturity scale climbs as a staircase |
 | Dated events in order | Timeline | `<ol class="timeline"><li><time>date · source</time>text</li></ol>`; `li.next` marks open or upcoming items |
 | Exact words someone said or wrote | Blockquote | `<blockquote><p>"…"</p><cite>who, where, date</cite></blockquote>` |
 | The agent's inference or recommendation, not a sourced fact | Derived callout | `<div class="callout"><div class="label-derived">Agent synthesis</div>…</div>` |
@@ -111,7 +111,7 @@ Every readable has a glossary. It is not part of the content: the terms live in 
 A figure has to earn its place: it should show something the text can't show as well. Ask whether the reader would sketch it themselves to follow along. If not, keep it as text.
 
 **Draw** when the shape of the information is the point:
-- order and dependency (branches, parallel steps, loops, approvals, handoffs, or more than about 5 steps)
+- order and dependency: any sequence of 3 or more steps, stages, phases or levels, plus branches, parallel steps, loops, approvals and handoffs
 - a system of 3+ parts with things moving between them
 - containment or layers
 - a change between two states
@@ -121,8 +121,8 @@ A figure has to earn its place: it should show something the text can't show as 
 - values over time
 - overlap or attrition
 
-**Keep it as text** (a list, step chips or a table) for:
-- 3 or fewer linear steps
+**Keep it as text** (a sentence, a list or a table) for:
+- two steps, said in one sentence ("discovery, then a pilot")
 - one or two numbers
 - lists of facts, people or opinions
 - attribute comparisons (a table)

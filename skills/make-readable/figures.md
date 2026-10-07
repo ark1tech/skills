@@ -10,7 +10,7 @@ Start from the relationship, not the topic.
 
 | The reader needs to see… | Encode it as | Primitives |
 |---|---|---|
-| Order and dependency: steps, handoffs, parallel work, merges | Position along a reading direction, plus lines | flow grid · nodes · connectors (`!` for the critical path) |
+| Order and dependency: steps, stages, handoffs, parallel work, merges | Position along a reading direction, plus lines | flow grid · nodes · connectors (`!` for the critical path); more than 4–5 steps wrap into a second row that runs back (a snake); a ladder climbs as a staircase |
 | Who does what, in order | One row per actor | lanes + flow grid |
 | A cycle, a hub, a network with no main direction | Free placement | free canvas · smooth connectors |
 | Containment, layers, system boundaries | Nesting | zones (stacked, or `.row` for layers) · lanes |
@@ -133,7 +133,7 @@ Compose freely. A schedule can sit above a row of stats. A flow can use lanes an
 </div>
 ```
 
-Page components work inside figures too: `.pill` for status, `.steps` for chips, `<code>`.
+Page components work inside figures too: `.pill` for status, `<code>`.
 
 ## 5. Connectors
 
