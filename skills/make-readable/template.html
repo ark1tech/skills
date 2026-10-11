@@ -415,7 +415,10 @@ svg.ink { display: block; width: 100%; height: auto; overflow: visible; }
 /* Highlights and comments */
 mark.hl { background: var(--hl); color: inherit; border-radius: 3px; cursor: pointer; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 mark.hl.has-note { text-decoration: underline dotted; text-decoration-color: var(--warn); text-underline-offset: 4px; } /* a comment keeps the highlight colour; hover shows it in .hl-tip */
-.hl-tip { max-width: min(340px, calc(100vw - 32px)); padding: 10px 13px; font-size: 14.5px; line-height: 1.5; color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere; pointer-events: none; }
+.hl-tip { max-width: min(360px, calc(100vw - 32px)); padding: 12px 14px; font-size: 14.5px; line-height: 1.5; color: var(--fg); overflow-wrap: anywhere; -webkit-user-select: text; user-select: text; cursor: auto; } /* hover onto it to select its text */
+.hl-tip p, .hl-tip ul { margin: 0; } .hl-tip > * + * { margin-top: 8px; } /* blank lines split paragraphs; "- " lines become bullets */
+.hl-tip ul { padding-left: 18px; } .hl-tip li + li { margin-top: 4px; } .hl-tip li::marker { color: var(--muted); }
+.hl-tip > p:first-child:not(:only-child) { font-weight: 600; } /* a lead line followed by detail reads as the answer */
 mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
 .nav-right { display: flex; align-items: center; gap: 8px; flex: none; }
 .pill-btn {
@@ -451,7 +454,7 @@ mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
 .pop-actions .danger { color: var(--bad); }
 .pop-actions [data-act="done"] { margin-left: auto; }
 .notes-panel {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 30; width: min(400px, 100vw);
+  position: fixed; top: 65px; right: 0; /* below the 64px navbar and its border, so Save stays clickable */ bottom: 0; z-index: 30; width: min(400px, 100vw);
   display: flex; flex-direction: column; background: var(--rail); border-left: 1px solid var(--line);
   box-shadow: var(--shadow); transform: translateX(100%); visibility: hidden;
   transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility .28s;
@@ -1424,26 +1427,50 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     if (m && getSelection().isCollapsed) { e.preventDefault(); openPop(m.dataset.id); }
   });
   document.addEventListener('mousedown', function (e) {
-    tip.hidden = true;
+    if (!tip.contains(e.target)) tip.hidden = true;
     if (!pop.hidden && !pop.contains(e.target) && !e.target.closest('mark.hl')) closePop();
   });
   // Hovering a highlight that has a comment shows the comment above the line under the pointer.
   var tip = document.getElementById('hl-tip');
+  function fillTip(text) { // plain-text comment → paragraphs (split on blank lines) and "- " bullet lists
+    tip.textContent = ''; var list = null, para = null;
+    text.trim().split('\n').forEach(function (line) {
+      var m = /^\s*[-•]\s+(.*)/.exec(line);
+      if (m) { para = null; list = list || tip.appendChild(document.createElement('ul')); list.appendChild(document.createElement('li')).textContent = m[1]; }
+      else if (!line.trim()) list = para = null;
+      else { list = null; if (para) para.appendChild(document.createElement('br')); else para = tip.appendChild(document.createElement('p')); para.appendChild(document.createTextNode(line)); }
+    });
+  }
+  var tipTimer = 0;
+  function hideTipSoon() { // the delay lets the pointer cross the gap onto the tooltip
+    clearTimeout(tipTimer);
+    tipTimer = setTimeout(function () {
+      var s = getSelection();
+      if (s.rangeCount && !s.isCollapsed && tip.contains(s.getRangeAt(0).commonAncestorContainer)) return; // keep it while its text is selected
+      tip.hidden = true;
+    }, 250);
+  }
+  tip.addEventListener('mouseenter', function () { clearTimeout(tipTimer); });
+  tip.addEventListener('mouseleave', function (e) { if (!e.buttons) hideTipSoon(); }); // not while dragging a selection out of it
   content.addEventListener('mouseover', function (e) {
+    if (e.buttons) return; // dragging, maybe selecting text in the tooltip
     var m = e.target.closest && e.target.closest('mark.hl.has-note');
     if (!m || m.dataset.id === activeId || (e.relatedTarget && m.contains(e.relatedTarget))) return;
     var note = find(m.dataset.id); if (!note || !(note.comment || '').trim()) return;
     var line = Array.prototype.find.call(m.getClientRects(), function (r) { return e.clientY >= r.top - 2 && e.clientY <= r.bottom + 2; });
-    tip.textContent = note.comment.trim();
+    clearTimeout(tipTimer);
+    if (!tip.hidden && tip._id === m.dataset.id) return; // already showing it: keep any selection in it
+    tip._id = m.dataset.id; fillTip(note.comment);
     place(tip, line || m.getBoundingClientRect(), false);
   });
   content.addEventListener('mouseout', function (e) {
     var m = e.target.closest && e.target.closest('mark.hl');
-    if (m && !(e.relatedTarget && m.contains(e.relatedTarget))) tip.hidden = true;
+    if (m && !(e.relatedTarget && m.contains(e.relatedTarget))) hideTipSoon();
   });
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     if (!exportPop.hidden) { toggleExport(false); exportBtn.focus({ preventScroll: true }); return; }
+    if (!tip.hidden) { tip.hidden = true; return; }
     if (!pop.hidden) closePop(); else if (!bar.hidden) { bar.hidden = true; getSelection().removeAllRanges(); }
     else if (root.classList.contains('notes-open')) togglePanel(false);
   });
@@ -1851,25 +1878,40 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     return '<!doctype html>\n' + clone.outerHTML + '\n';
   }
   function fileName() { return decodeURIComponent(location.pathname.split('/').pop()) || 'readable.html'; }
-  function saved() { fileStamp = data.updatedAt || 0; render(); }
+  function saved(label) {
+    fileStamp = data.updatedAt || 0; render();
+    document.querySelectorAll('.save-file .lbl').forEach(function (s) { s.textContent = label; clearTimeout(s._t); s._t = setTimeout(function () { s.textContent = 'Save'; }, 1800); });
+  }
+  var saving = false;
   async function save() {
+    if (saving) return; // a second click while the file dialog is open would fail and download a copy
+    saving = true;
+    try { await writeFile(); } finally { saving = false; }
+  }
+  async function writeFile() {
     closePop();
     clearTimeout(draftTimer);
     if ((data.draft || '') !== editor.innerHTML) { data.draft = editor.innerHTML; persist(); }
     if (!data.updatedAt) data.updatedAt = Date.now();
     var html = serialize();
-    if (window.showSaveFilePicker) {
+    // The file chosen once is reused; if it stops working (moved, replaced, permission gone), ask for it again before downloading.
+    for (var tries = 0; window.showSaveFilePicker && tries < 2; tries++) {
+      var fresh = !fileHandle;
       try {
-        if (!fileHandle) fileHandle = await window.showSaveFilePicker({ suggestedName: fileName(), types: [{ description: 'HTML page', accept: { 'text/html': ['.html'] } }] });
+        if (fresh) fileHandle = await window.showSaveFilePicker({ suggestedName: fileName(), types: [{ description: 'HTML page', accept: { 'text/html': ['.html'] } }] });
         var w = await fileHandle.createWritable(); await w.write(html); await w.close();
-        return saved();
-      } catch (e) { if (e && e.name === 'AbortError') return; fileHandle = null; }
+        return saved('Saved');
+      } catch (e) {
+        if (e && e.name === 'AbortError') return;
+        fileHandle = null;
+        if (fresh) break;
+      }
     }
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
     a.download = fileName(); document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
-    saved();
+    saved('Downloaded');
   }
   document.querySelectorAll('.save-file').forEach(function (b) { b.addEventListener('click', save); });
 
