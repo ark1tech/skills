@@ -414,7 +414,8 @@ svg.ink { display: block; width: 100%; height: auto; overflow: visible; }
 
 /* Highlights and comments */
 mark.hl { background: var(--hl); color: inherit; border-radius: 3px; cursor: pointer; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-mark.hl.has-note { background: var(--hl-note); text-decoration: underline dotted; text-decoration-color: var(--warn); text-underline-offset: 4px; }
+mark.hl.has-note { text-decoration: underline dotted; text-decoration-color: var(--warn); text-underline-offset: 4px; } /* a comment keeps the highlight colour; hover shows it in .hl-tip */
+.hl-tip { max-width: min(340px, calc(100vw - 32px)); padding: 10px 13px; font-size: 14.5px; line-height: 1.5; color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere; pointer-events: none; }
 mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
 .nav-right { display: flex; align-items: center; gap: 8px; flex: none; }
 .pill-btn {
@@ -430,12 +431,14 @@ mark.hl.flash { outline: 2px solid var(--accent); outline-offset: 1px; }
   border-radius: 14px; box-shadow: var(--shadow);
 }
 .sel-bar { display: flex; gap: 2px; padding: 4px; }
-.sel-bar button, .pop-actions button {
+.sel-bar button, .pop-actions button, .export-pop button {
   appearance: none; border: 0; background: transparent; color: var(--fg); cursor: pointer;
   display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border-radius: 10px; font: 500 13.5px/1 var(--sans);
 }
-.sel-bar button:hover, .pop-actions button:hover { background: var(--card-2); }
-.sel-bar svg, .pop-actions svg { width: 16px; height: 16px; }
+.sel-bar button:hover, .pop-actions button:hover, .export-pop button:hover { background: var(--card-2); }
+.sel-bar svg, .pop-actions svg, .export-pop svg { width: 16px; height: 16px; }
+.export-pop { position: fixed; display: grid; padding: 4px; min-width: 210px; }
+.export-toggle[aria-expanded="true"] { background: var(--card-2); color: var(--fg); }
 @media (max-width: 600px) { .sel-bar button { gap: 5px; padding-inline: 7px; } } /* four labelled buttons fit a 390px screen */
 .note-pop { width: min(340px, calc(100vw - 32px)); padding: 12px; display: grid; gap: 10px; }
 .note-pop:focus { outline: none; }
@@ -613,11 +616,13 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   .pill-btn { padding: 8px 10px; }
   .nav-right { gap: 6px; }
   .theme-switch button { padding: 7px 9px; }
+  .export-toggle { width: 32px; }
   main { padding-block: 64px 120px; }
   section { padding-top: 88px; }
   .callout { padding: 22px 20px; }
 }
 @media (max-width: 500px) { .crumb { display: none; } } /* no room beside the chips; phones get the inline contents instead */
+@media (max-width: 420px) { .pill-btn { padding-inline: 8px; } .nav-right { gap: 4px; } } /* room for the export icon on a 390px screen */
 </style>
 </head>
 <body>
@@ -653,6 +658,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     <button type="button" data-mode="light" aria-pressed="false" title="Light mode" aria-label="Light mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
     <button type="button" data-mode="dark" aria-pressed="false" title="Dark mode" aria-label="Dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
   </div>
+  <button type="button" class="icon-btn export-toggle" aria-expanded="false" aria-controls="export-pop" title="Export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg><span class="sr">Export</span></button>
   </div>
 </header>
 
@@ -735,6 +741,13 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     <button type="button" data-act="copy" title="Copy this highlight and its comment with this file's path, to paste into an AI agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0l1.58 6.13a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg><span>Copy</span></button>
     <button type="button" data-act="done">Done</button>
   </div>
+</div>
+
+<div class="floating hl-tip" id="hl-tip" role="tooltip" hidden></div>
+
+<div class="floating export-pop" id="export-pop" aria-label="Export" hidden>
+  <button type="button" data-act="md-download" title="Download the whole page, with your highlights, comments and notes, as a Markdown file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>Download Markdown</span></button>
+  <button type="button" data-act="md-copy" title="Copy the whole page, with your highlights, comments and notes, as Markdown"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg><span>Copy Markdown</span></button>
 </div>
 
 <aside class="notes-panel" id="notes-panel" aria-label="Highlights and comments">
@@ -1334,7 +1347,7 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   function openPop(id) {
     var note = find(id), m = marks(id)[0];
     if (!note || !m) return;
-    activeId = id; area.value = note.comment || '';
+    activeId = id; area.value = note.comment || ''; tip.hidden = true;
     place(pop, m.getBoundingClientRect(), true);
     pop.focus({ preventScroll: true }); // focus the popover, not the box, so nothing is preselected; Tab reaches it
   }
@@ -1376,8 +1389,8 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     return '[' + JSON.stringify(r.toString().replace(/\s+/g, ' ').trim()) + ' in ' + tag + ' ' + where + ' (at ' + path + anchor + ')]';
   }
   function copyText(btn, text) {
-    var label = btn.querySelector('span');
-    function show(t) { label.textContent = t; clearTimeout(btn._t); btn._t = setTimeout(function () { label.textContent = 'Copy'; }, 1400); }
+    var label = btn.querySelector('span'), orig = btn._label || (btn._label = label.textContent);
+    function show(t) { label.textContent = t; clearTimeout(btn._t); btn._t = setTimeout(function () { label.textContent = orig; }, 1400); }
     navigator.clipboard.writeText(text).then(function () { show('Copied'); }, function () { show('Copy failed'); });
   }
   function copyForAgent(btn) { if (pending) copyText(btn, agentRef(pending)); }
@@ -1411,10 +1424,26 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     if (m && getSelection().isCollapsed) { e.preventDefault(); openPop(m.dataset.id); }
   });
   document.addEventListener('mousedown', function (e) {
+    tip.hidden = true;
     if (!pop.hidden && !pop.contains(e.target) && !e.target.closest('mark.hl')) closePop();
+  });
+  // Hovering a highlight that has a comment shows the comment above the line under the pointer.
+  var tip = document.getElementById('hl-tip');
+  content.addEventListener('mouseover', function (e) {
+    var m = e.target.closest && e.target.closest('mark.hl.has-note');
+    if (!m || m.dataset.id === activeId || (e.relatedTarget && m.contains(e.relatedTarget))) return;
+    var note = find(m.dataset.id); if (!note || !(note.comment || '').trim()) return;
+    var line = Array.prototype.find.call(m.getClientRects(), function (r) { return e.clientY >= r.top - 2 && e.clientY <= r.bottom + 2; });
+    tip.textContent = note.comment.trim();
+    place(tip, line || m.getBoundingClientRect(), false);
+  });
+  content.addEventListener('mouseout', function (e) {
+    var m = e.target.closest && e.target.closest('mark.hl');
+    if (m && !(e.relatedTarget && m.contains(e.relatedTarget))) tip.hidden = true;
   });
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
+    if (!exportPop.hidden) { toggleExport(false); exportBtn.focus({ preventScroll: true }); return; }
     if (!pop.hidden) closePop(); else if (!bar.hidden) { bar.hidden = true; getSelection().removeAllRanges(); }
     else if (root.classList.contains('notes-open')) togglePanel(false);
   });
@@ -1806,7 +1835,8 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     });
     clone.querySelector('body').normalize();
     clone.querySelectorAll('[aria-current]').forEach(function (el) { el.removeAttribute('aria-current'); });
-    clone.querySelectorAll('#sel-bar, #note-pop').forEach(function (el) { el.hidden = true; el.removeAttribute('style'); });
+    clone.querySelectorAll('#sel-bar, #note-pop, #hl-tip, #export-pop').forEach(function (el) { el.hidden = true; el.removeAttribute('style'); });
+    clone.querySelector('#hl-tip').textContent = ''; clone.querySelector('.export-toggle').setAttribute('aria-expanded', 'false');
     clone.querySelector('.crumb-sec span').textContent = 'Overview';
     clone.querySelector('.crumb-sec').setAttribute('aria-expanded', 'false');
     var sp = clone.querySelector('#sec-pop'); sp.hidden = true; sp.removeAttribute('style'); sp.querySelector('.ref-list').textContent = '';
@@ -1842,6 +1872,158 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
     saved();
   }
   document.querySelectorAll('.save-file').forEach(function (b) { b.addEventListener('click', save); });
+
+  // Export: the whole page as Markdown. Highlights become ==text==, comments become footnotes,
+  // figures become their summary plus their data, then come your notes, the glossary with your term notes,
+  // and any highlight that no longer matches the page.
+  // ponytail: no Markdown escaping of page text; add it if pages start using literal * _ or | in prose.
+  var exportBtn = document.querySelector('.export-toggle'), exportPop = document.getElementById('export-pop');
+  function toMarkdown() {
+    var foot = [], footOf = {};
+    var BLOCK = /^(P|H[1-6]|UL|OL|LI|TABLE|BLOCKQUOTE|PRE|DIV|SECTION|HEADER|FOOTER|FIGURE|FIGCAPTION|DETAILS|SUMMARY|HR|ASIDE|NAV|MAIN|CITE)$/;
+    function skipEl(el) { return /^(SCRIPT|STYLE|SVG|BUTTON|TEMPLATE)$/.test(el.tagName.toUpperCase()) || el.matches('.toc, .chart-plot, .chart-legend, .edges, .sr'); }
+    function ref(id) {
+      var note = find(id); if (!note || !(note.comment || '').trim()) return '';
+      if (!footOf[id]) { foot.push(note.comment.trim()); footOf[id] = foot.length; }
+      return '[^' + footOf[id] + ']';
+    }
+    function lastMark(m) { var ms = marks(m.dataset.id); return ms[ms.length - 1] === m; }
+    function refsIn(el) { return Array.prototype.filter.call(el.querySelectorAll('mark.hl'), lastMark).map(function (m) { return ref(m.dataset.id); }).join(''); }
+    function inlineOf(el) { return Array.prototype.map.call(el.childNodes, inline).join(''); }
+    function inline(n) {
+      if (n.nodeType === 3) return n.nodeValue.replace(/\s+/g, ' ');
+      if (n.nodeType !== 1 || skipEl(n)) return '';
+      var t = n.tagName;
+      if (t === 'BR') return '  \n';
+      if (n.classList.contains('ref')) { // a reference chip in your notes
+        var label = n.title || n.textContent;
+        return n.dataset.kind === 'sec' ? '[' + label + '](#' + n.dataset.id + ')' : '"' + label + '"';
+      }
+      if (t === 'CODE' || t === 'KBD') { var c = n.textContent; return (c.indexOf('`') >= 0 ? '`` ' + c + ' ``' : '`' + c + '`') + refsIn(n); }
+      var s = inlineOf(n); if (!s.trim()) return s;
+      var lead = s.match(/^\s*/)[0], trail = s.match(/\s*$/)[0], core = s.trim();
+      function w(a, b) { return lead + a + core + (b == null ? a : b) + trail; }
+      if (t === 'STRONG' || t === 'B') return w('**');
+      if (t === 'EM' || t === 'I') return w('*');
+      if (t === 'TIME') return w('**', '** ');
+      if (t === 'MARK' && n.classList.contains('hl')) return w('==', '==' + (lastMark(n) ? ref(n.dataset.id) : ''));
+      if (t === 'A' && n.getAttribute('href')) return w('[', '](' + n.getAttribute('href') + ')');
+      return s;
+    }
+    function join(arr) { return arr.filter(Boolean).join('\n\n'); }
+    function quote(s) { return s.split('\n').map(function (l) { return l ? '> ' + l : '>'; }).join('\n'); }
+    function blocks(el) {
+      var out = [], run = '';
+      function flush() { var s = run.replace(/ {2,}(?!\n)/g, ' ').trim(); if (s) out.push(s); run = ''; }
+      Array.prototype.forEach.call(el.childNodes, function (n) {
+        if (n.nodeType === 1 && skipEl(n)) return;
+        if (n.nodeType === 1 && BLOCK.test(n.tagName)) { flush(); out.push(block(n)); } else run += inline(n);
+      });
+      flush();
+      return out;
+    }
+    function list(n) {
+      var i = 0, ordered = n.tagName === 'OL';
+      return Array.prototype.filter.call(n.children, function (li) { return li.tagName === 'LI'; }).map(function (li) {
+        var bullet = ordered ? (++i) + '. ' : '- ', pad = ' '.repeat(bullet.length);
+        return bullet + join(blocks(li)).split('\n').map(function (l, j) { return j && l ? pad + l : l; }).join('\n');
+      }).join('\n');
+    }
+    function grid(rows) { // rows of cell strings -> a GFM table
+      if (!rows.length) return '';
+      var cols = Math.max.apply(null, rows.map(function (r) { return r.length; }));
+      var lines = rows.map(function (r) {
+        var cells = r.map(function (c) { return String(c).replace(/\s+/g, ' ').trim().replace(/\|/g, '\\|'); });
+        while (cells.length < cols) cells.push('');
+        return '| ' + cells.join(' | ') + ' |';
+      });
+      lines.splice(1, 0, '|' + ' --- |'.repeat(cols));
+      return lines.join('\n');
+    }
+    function table(n) {
+      return grid(Array.prototype.map.call(n.rows, function (tr) {
+        var cells = Array.prototype.map.call(tr.cells, inlineOf);
+        return tr.classList.contains('group') ? ['**' + cells[0].trim() + '**'] : cells;
+      }));
+    }
+    function chart(script) {
+      var d; try { d = JSON.parse(script.textContent); } catch (e) { return ''; }
+      var y = d.y || {};
+      return grid([[''].concat(d.series.map(function (s) { return s.name; }))].concat(d.x.map(function (x, i) {
+        return [x].concat(d.series.map(function (s) { return s.values[i] == null ? '' : (y.prefix || '') + s.values[i] + (y.suffix || ''); }));
+      })));
+    }
+    function figure(n) {
+      var out = ['**Figure.** ' + (n.getAttribute('aria-label') || '')];
+      n.querySelectorAll('.fig-label, .bars, .stats, .fig-note, script.chart-data, figcaption').forEach(function (el) {
+        if (el.matches('.bars')) out.push(Array.prototype.map.call(el.querySelectorAll('.brow'), function (r) {
+          return '- ' + inlineOf(r.querySelector('span')).trim() + ': ' + (r.querySelector('b') ? inlineOf(r.querySelector('b')).trim() : '');
+        }).join('\n'));
+        else if (el.matches('.stats')) out.push(Array.prototype.map.call(el.querySelectorAll('.stat'), function (s) {
+          return '- ' + Array.prototype.map.call(s.children, function (c) { return inlineOf(c).trim(); }).filter(Boolean).join(' · ');
+        }).join('\n'));
+        else if (el.matches('script.chart-data')) out.push(chart(el));
+        else if (el.matches('figcaption')) out.push('*' + inlineOf(el).trim() + '*');
+        else out.push(Array.prototype.map.call(el.childNodes, function (c) { return c.nodeType === 1 && c.tagName === 'B' ? inline(c) + ' · ' : inline(c); }).join('').trim());
+      });
+      return quote(join(out));
+    }
+    function block(n) {
+      var t = n.tagName, c = n.classList;
+      if (/^H[1-6]$/.test(t)) {
+        var num = n.querySelector('.num');
+        var text = Array.prototype.map.call(n.childNodes, function (k) { return k === num ? '' : inline(k); }).join('').replace(/\s+/g, ' ').trim();
+        return '#'.repeat(+t[1]) + ' ' + (num ? num.textContent + ' · ' : '') + text;
+      }
+      if (t === 'P') return inlineOf(n).replace(/ {2,}(?!\n)/g, ' ').trim();
+      if (t === 'SUMMARY') return '**' + inlineOf(n).trim() + '**';
+      if (t === 'CITE') return '*' + inlineOf(n).trim() + '*';
+      if (t === 'HR') return '---';
+      if (t === 'PRE') return '```\n' + n.textContent.replace(/\n$/, '') + '\n```' + (refsIn(n) ? '\n\n' + refsIn(n) : '');
+      if (t === 'UL' || t === 'OL') return list(n);
+      if (t === 'TABLE') return table(n);
+      if (t === 'FIGURE') return figure(n);
+      if (t === 'BLOCKQUOTE' || c.contains('callout')) return quote(join(blocks(n)));
+      if (c.contains('eyebrow') || c.contains('label-derived')) return '**' + inlineOf(n).trim() + '**';
+      if (c.contains('meta')) return Array.prototype.map.call(n.children, function (k) { return inlineOf(k).trim(); }).filter(Boolean).join(' · ');
+      return join(blocks(n));
+    }
+
+    var parts = [join(blocks(content))];
+    if (editor.textContent.trim() || editor.querySelector('.ref')) parts.push('## My notes\n\n' + join(blocks(editor)));
+    var gl = []; try { gl = JSON.parse(document.getElementById('readable-glossary').textContent); } catch (e) {}
+    gl = gl.filter(function (g) { return g && g.term && g.def; }).sort(function (a, b) { return a.term.localeCompare(b.term, undefined, { sensitivity: 'base' }); });
+    if (gl.length) parts.push('## Glossary\n\n' + gl.map(function (g) {
+      var mine = (data.terms || {})[g.term], line = '- **' + g.term + '**' + (g.full ? ' (' + g.full + ')' : '') + ': ' + g.def;
+      return mine && mine.trim() ? line + '\n  - My notes: ' + mine.trim().replace(/\n/g, '\n    ') : line;
+    }).join('\n'));
+    var lost = data.notes.filter(function (note) { return missing[note.id]; });
+    if (lost.length) parts.push('## Highlights no longer on the page\n\n' + lost.map(function (note) { return '- ==' + note.exact + '==' + ref(note.id); }).join('\n'));
+    parts.push('*Exported from ' + fileName() + ' on ' + new Date().toISOString().slice(0, 10) + '.*');
+    if (foot.length) parts.push(foot.map(function (f, i) { return '[^' + (i + 1) + ']: ' + f.replace(/\n/g, '\n    '); }).join('\n'));
+    return parts.join('\n\n').replace(/\n{3,}/g, '\n\n') + '\n';
+  }
+  function toggleExport(open) {
+    open = typeof open === 'boolean' ? open : exportPop.hidden;
+    exportPop.hidden = !open; exportBtn.setAttribute('aria-expanded', String(open));
+    if (!open) return;
+    var r = exportBtn.getBoundingClientRect();
+    exportPop.style.top = Math.round(r.bottom + 8) + 'px';
+    exportPop.style.left = Math.round(Math.max(12, Math.min(r.right - exportPop.offsetWidth, innerWidth - exportPop.offsetWidth - 12))) + 'px';
+    exportPop.querySelector('button').focus({ preventScroll: true });
+  }
+  exportBtn.addEventListener('click', function () { toggleExport(); });
+  exportPop.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.act === 'md-copy') { copyText(b, toMarkdown()); return; }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([toMarkdown()], { type: 'text/markdown' }));
+    a.download = fileName().replace(/\.html?$/i, '') + '.md'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    toggleExport(false);
+  });
+  document.addEventListener('mousedown', function (e) { if (!exportPop.hidden && !exportPop.contains(e.target) && !exportBtn.contains(e.target)) toggleExport(false); });
+  addEventListener('resize', function () { toggleExport(false); });
 
   // Glossary: the navbar chip opens a search over #readable-glossary. Typing filters and ↑/↓ preview a definition;
   // a click or Enter opens the term in a centred dialog with the reader's own notes (data.terms) and a web search for it.

@@ -30,12 +30,12 @@ Turns an explanation into one `.html` file that reads like a long-form blog post
 
 Copy the template with `cp`; don't retype it. Edit only inside `<div class="content">`, plus `<title>`, `{{SHORT_NAME}}` and the `#readable-glossary` block. Leave the `<style>`, rail, navbar, floating UI, notes panel and scripts untouched unless the user asks for a design change.
 
-**Updating a readable that already exists:** edit sections in place. Never regenerate the file from the template, and never touch `<script type="application/json" id="readable-notes">`. That block holds the user's saved highlights, comments, notes and glossary-term notes. Renaming a glossary term orphans the notes kept on it, so keep `term` stable. Highlights and passage references re-anchor to the edited text on their own. Rerun the glossary gate after every edit. If the file predates the glossary, copy the Glossary chip, `#gloss-pop`, `#term-dialog`, `#readable-glossary`, the `--scrim` tokens, the glossary CSS and the glossary script from the template into it.
+**Updating a readable that already exists:** edit sections in place. Never regenerate the file from the template, and never touch `<script type="application/json" id="readable-notes">`. That block holds the user's saved highlights, comments, notes and glossary-term notes. Renaming a glossary term orphans the notes kept on it, so keep `term` stable. Highlights and passage references re-anchor to the edited text on their own. Rerun the glossary gate after every edit. If the file predates the glossary, copy the Glossary chip, `#gloss-pop`, `#term-dialog`, `#readable-glossary`, the `--scrim` tokens, the glossary CSS and the glossary script from the template into it. If it predates hover comments or Export, copy `.hl-tip`, `#hl-tip`, `#export-pop`, the Export icon, their CSS (including the 420px navbar rule) and the matching script blocks from the template.
 
 ## Page anatomy
 
 ```
-rail (fixed left, 288px, collapsible)   | navbar (sticky): ☰ SHORT_NAME / current section · Notes · Comments · Glossary · Save · theme icons
+rail (fixed left, 288px, collapsible)   | navbar (sticky): ☰ SHORT_NAME / current section · Notes · Comments · Glossary · Save · theme icons · Export
                                         | content column 720px
   Contents                              |   header.post: eyebrow · h1 · lede · meta
   01 Section one  ← active highlight    |   callout "The short version"
@@ -165,6 +165,7 @@ Encoding table, every primitive's markup, connector syntax, charts, ink SVG, mot
 - **Section picker:** the section name in the navbar breadcrumb is a button. It opens a scrollable list of every section with the current one centred and bold. Pick with the mouse or ↑/↓/Enter (Esc closes) to jump there instantly. The navbar and rail are not text-selectable, because selecting there autoscrolled the page.
 - **Highlights and comments:**
   - Select text and a floating bar offers Highlight, Comment, Notes or Copy. Click a highlight to edit its comment; the comment box also has **Remove** and **Copy** (that highlight and its comment, in the agent format below).
+  - A comment never changes the highlight colour. A dotted underline marks a highlight that has one, and hovering it shows the comment in a tooltip (`#hl-tip`) above the line under the pointer.
   - **Copy** puts one line on the clipboard for pasting into an AI agent ahead of a question: the exact selection, the element it sits in, its section, and the file's absolute path with the section anchor, e.g. `["Solution one-liner." in <li> in section 04 "What AWS is asking for" (at /Users/…/brief.html#asks)]`. The agent finds the spot by searching the file for the quote.
   - The **Comments** panel (navbar) lists every highlight and comment by section; clicking one jumps to it. The search box at its foot narrows the list to notes whose quote, comment or section matches.
   - The panel's **Copy** button copies every highlight shown (all of them, or the search matches) the same way, in page order, each followed by `Comment: …` when it has one, so the whole review can go to an agent at once.
@@ -172,6 +173,12 @@ Encoding table, every primitive's markup, connector syntax, charts, ink SVG, mot
 - **Saving:** notes autosave to `localStorage` under `readable-notes:<path>`.
   - **Save** writes them into the `#readable-notes` JSON block of the same file. Chrome and Edge use the save dialog (pick the same file once per session). Other browsers download a copy.
   - Saving strips the `<mark>` elements and UI state, so the saved source stays clean.
+- **Export:** the icon at the right end of the navbar opens **Download Markdown** and **Copy Markdown** (Esc or a click outside closes it). The Markdown holds the whole page:
+  - headings with their numbers, paragraphs, lists, tables, code, quotes, and callouts as `>` quotes with their label in bold;
+  - each figure as its `aria-label` summary plus its labels and real data: bars and stats as lists, charts as tables;
+  - highlights as `==text==` and comments as numbered footnotes;
+  - then **My notes** (the drawer), the **Glossary** with the reader's term notes, and any highlight that no longer matches the page.
+  - The download is named after the page, with `.md` in place of `.html`.
 - **Notes drawer:** a resizable bottom drawer, opened from **Notes** in the navbar, for the reader's own notes. One toolbar row holds the formatting buttons (left), the resize handle (centre), and the save status and close button (right), with no title text.
   - **Formatting:** bold, italic, headings, lists, quotes and links. Markdown shortcuts work at the start of a line: `- `, `1. `, `# `, `> `. Enter on an empty quote, heading or bold/italic line drops back to plain text, so formatting never sticks.
   - **References:** typing `@` opens a popover pinned beside the caret (never over the typing line). It searches highlights, comments, sections and any passage, and an icon switch (section · highlight · comment) narrows it to one type. Arrow keys and hover pick a row and scroll only the list, never the page.

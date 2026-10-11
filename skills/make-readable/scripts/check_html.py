@@ -10,7 +10,7 @@ from html import unescape
 from html.parser import HTMLParser
 
 VOID = {"meta", "link", "br", "hr", "img", "input", "source", "wbr"}
-REQUIRED = ["#rail", "#sel-bar", "#note-pop", "#notes-panel", "#readable-notes", "#readable-glossary", "#gloss-pop", "#term-dialog", "#drawer", "#draft-editor", "#ref-pop", ".navbar", ".theme-switch", ".gloss-toggle", ".content", ".toc"]
+REQUIRED = ["#rail", "#sel-bar", "#note-pop", "#notes-panel", "#readable-notes", "#readable-glossary", "#gloss-pop", "#term-dialog", "#drawer", "#draft-editor", "#ref-pop", "#hl-tip", "#export-pop", ".export-toggle", ".navbar", ".theme-switch", ".gloss-toggle", ".content", ".toc"]
 # Text inside these is markup, identifiers or someone else's verbatim words, not prose the page needs to define.
 NOT_PROSE = {"script", "style", "code", "pre", "kbd", "blockquote", "q"}
 # Two or more capitals in one all-caps run (SLA, B2B, HANA), with an optional plural "s".
