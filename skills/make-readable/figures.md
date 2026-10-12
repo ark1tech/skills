@@ -21,6 +21,7 @@ Start from the relationship, not the topic.
 | Durations, phases, deadlines | Position on a time axis | schedule (bars, ghost bars, milestones) |
 | Two criteria at once | Position on two axes | quadrant |
 | Many values over time or across categories | A chart | chart engine (line or bar) |
+| A whole study, project or plan end to end: phases, what each step may touch, gates, a freeze point, outputs | Phases top to bottom; one card per step with its specifics | workflow board (§3) |
 | Overlap, funnels, radial layouts, simple maps, anything else | Drawn shapes | ink SVG |
 
 Compose freely. A schedule can sit above a row of stats. A flow can use lanes and zones together. A free canvas can carry labelled connectors. Several primitives can share one figure, separated by `.fig-label` headings.
@@ -58,7 +59,8 @@ Compose freely. A schedule can sit above a row of stats. A flow can use lanes an
   <div class="node" id="b" style="--c:2;--r:1;--rs:2">…</div>   <!-- --cs / --rs span columns / rows -->
 </div>
 ```
-- Columns are `max-content`, spread across the width with an 80px minimum gap.
+- Columns are `max-content`, spread across the width with an 80px minimum gap. Rows are 56px apart, so vertical connectors are long enough to read as arrows; never squeeze `row-gap` below about 44px.
+- At 1120px, four columns of 2–3 word nodes is the practical limit. A fifth column, or long labels, makes the figure scroll on desktop: shorten labels, fold steps into a node's `<small>` line, or wrap into a snake.
 - Override inline when needed: `style="grid-template-columns:1fr; row-gap:44px; column-gap:48px"`.
 
 **Lanes.** A band for each actor or phase, spanning columns, sitting under nodes and lines.
@@ -72,6 +74,38 @@ Compose freely. A schedule can sit above a row of stats. A flow can use lanes an
 <div class="zone" style="--c:2;--r:1"><span class="zone-label">SAP S/4HANA</span> …nodes stacked… </div>
 <div class="zone row" style="--r:2"><span class="zone-label">Agents</span> …nodes in a row… </div>
 ```
+
+**Workflow board.** The whole of a study, project or plan in one figure, when the reader must see every phase *and* the specifics of each step. Phases run top to bottom; each step is a card whose title links to the section that explains it.
+```html
+<div class="wf">
+  <div class="wf-phase"><span class="n">1</span><b>Prepare</b><small>One line: what this phase may touch.</small></div>
+  <div class="wf-body">
+    <div class="wf-row">                                            <!-- steps left to right; .wf-to between cards -->
+      <div class="wf-card"><a class="wf-t" href="#section">1.1 Step title</a>
+        <ul><li>Specific: a number, a rule, a limit</li></ul>
+        <div class="wf-files"><code>rows.csv</code></div></div>   <!-- what the step produces -->
+      <span class="wf-to"></span>
+      <div class="wf-card gate">…<li><span class="ok">Yes:</span> continue</li><li><span class="no">No:</span> revise</li>…</div>
+    </div>
+    <div class="wf-dn"></div>                                       <!-- next row of the same phase -->
+    <div class="wf-lanes">                                          <!-- 5-column grid: lane · gap · lane · gap · lane -->
+      <div class="wf-lane-h" style="grid-row:1;grid-column:1;--c:var(--s1)"><i></i>Training rows</div>
+      <div class="wf-card" style="grid-row:2;grid-column:1;--c:var(--s1)">…</div>
+      <span class="wf-to" style="grid-row:2;grid-column:2"></span>  <!-- hand-off between lanes, at that row -->
+      <div class="wf-dn" style="grid-row:3;grid-column:1"></div>
+      <div class="wf-card sealed" style="grid-row:2 / 9;grid-column:5;--c:var(--s3)">…</div>
+    </div>
+    <div class="wf-card freeze">…</div>                              <!-- the point after which nothing changes -->
+  </div>
+  <div class="wf-gap"><span>What passes to the next phase</span></div>
+  <div class="wf-phase last">…</div>                                <!-- .last ends the timeline line -->
+</div>
+```
+- **Lane colour:** `--c` on a card sets its straight left bar (clipped by the rounded corners) and a light tint. Use it for one meaning only (which data, actor or owner) and give it a legend (`lg-sw`).
+- **Variants:** `gate` (dashed, a decision with `.ok`/`.no` outcomes), `sealed` (dashed, a set nothing may touch yet), `freeze` (ringed), `wide` (a wider card in a row).
+- **Content:** number the steps (1.1, 2.3…) so people can point at them. Each card carries 2–5 short bullets with the actual numbers, rules and limits, plus its output file. Mark sample values as sample in the `.fig-label`.
+- **Size:** `.wf` has a 1000px minimum width and scrolls inside the figure on phones. Three cards per row or three lanes is the limit.
+- **Export:** Markdown export writes each phase as a heading and each card as one bullet, so the details survive.
 
 **Free canvas.** Absolute placement by percentage, for loops, hubs and radial arrangements.
 ```html
@@ -90,7 +124,7 @@ Compose freely. A schedule can sit above a row of stats. A flow can use lanes an
   <small>sub-line detail</small>
 </div>
 ```
-- **Status (`i.st`):** plain (done), `accent`, `warn`, `good`, `bad`, `idle` (ring), `run` (spinner).
+- **Status (`i.st`):** plain (done), `accent`, `warn`, `good`, `bad` (a cross), `idle` (ring), `run` (spinner).
 - **Icons (`i.gi.gi-NAME`):** `doc db users person bell filter agent clock cart factory truck money gear check mail cloud chart bolt`.
 - **Variants:** `hot` is the one that matters; `out` is a result; `ghost` is planned or optional; `dim` is de-emphasised.
 - Labels are 1–4 words and render as uppercase mono; detail goes in `<small>`.
@@ -206,3 +240,6 @@ When no primitive fits (overlaps, funnels, radial diagrams, simple maps, a custo
 - **Every word earns its place:** a tag, sub-line or legend entry stays only if it tells the reader something the arrows, the label and the text around the figure don't. Cut step-number tags ("Beat 1", "1 · Data") when arrows already show the order, sub-lines that restate the label ("agentic" under "Inventory management") or repeat a table next to the figure, and legend entries for things a node already says in words ("Start here"). When in doubt, cut: six bare labels joined by arrows beat six boxes of three lines each.
 - **Size:** at most about 12 boxes per diagram; split bigger ones or zoom out. Keep one reading direction and labels of 1–4 words.
 - **Look once after building:** hidden chips, lines under boxes, clipped labels or a figure that scrolls on desktop all mean the layout needs to change.
+- **Measure, don't guess, the width:** at 1440px, every `figure` needs `scrollWidth <= clientWidth`. Wide flows are the usual offenders.
+- **Short edges carry no chips:** a chip label on a line between neighbouring columns hides behind the nodes. Drop it when the node names already say it.
+- **One colour, one meaning:** `--s2` and `--warn` are both amber, and `--s4` and `--bad` are both red. Never put both of a pair in one figure's legend; use `color-mix(in srgb, var(--bad) 40%, var(--node))` for a muted variant instead.

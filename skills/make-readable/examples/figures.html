@@ -36,6 +36,7 @@
   --s3: #0f9d76;
   --s4: #e5484d;
   --check: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20fill-rule='evenodd'%20d='M8%200a8%208%200%201%201%200%2016A8%208%200%200%201%208%200Zm3.6%205.3a.8.8%200%200%200-1.1%200L7%208.8%205.5%207.3a.8.8%200%201%200-1.1%201.1l2%202a.8.8%200%200%200%201.1%200l4-4a.8.8%200%200%200%200-1.1Z'/%3E%3C/svg%3E");
+  --cross: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cmask%20id='m'%3E%3Ccircle%20cx='8'%20cy='8'%20r='8'%20fill='white'/%3E%3Cpath%20d='M5.4%205.4l5.2%205.2m0-5.2l-5.2%205.2'%20stroke='black'%20stroke-width='1.7'%20stroke-linecap='round'/%3E%3C/mask%3E%3Ccircle%20cx='8'%20cy='8'%20r='8'%20mask='url%28%23m%29'/%3E%3C/svg%3E");
   --rail-w: 288px;
   --col: 720px;
   --wide: 1120px;
@@ -220,6 +221,7 @@ footer { margin-top: 40px; font-size: 14px; color: var(--muted); }
 .fig.bare { padding: 0; background: none; border: 0; overflow: visible; }
 .fig > figcaption { margin-top: 24px; max-width: 72ch; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
 .fig-label { margin: 0 0 24px; font: 500 14.5px/1.45 var(--sans); color: var(--muted); }
+.stack + .fig-label, .bars + .fig-label, .stats + .fig-label, .fig-legend + .fig-label { margin-top: 32px; }
 .flow + .fig-label { margin-top: 48px; }
 .fig-note { margin-top: 26px; font: 500 11.5px/1.7 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
 .fig-note b { display: block; font-weight: 500; color: var(--muted); }
@@ -229,7 +231,7 @@ footer { margin-top: 40px; font-size: 14px; color: var(--muted); }
 
 .flow {
   position: relative; display: grid; grid-template-columns: repeat(var(--cols, 3), max-content);
-  justify-content: space-between; align-items: center; gap: 22px 80px; min-width: max-content;
+  justify-content: space-between; align-items: center; gap: 56px 80px; min-width: max-content;
 }
 .flow > :not(svg) { position: relative; z-index: 2; grid-column: var(--c, auto) / span var(--cs, 1); grid-row: var(--r, auto) / span var(--rs, 1); }
 .flow > svg.edges { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 1; }
@@ -251,7 +253,7 @@ footer { margin-top: 40px; font-size: 14px; color: var(--muted); }
 
 .st { width: 15px; height: 15px; flex: none; border-radius: 50%; background: var(--faint);
   -webkit-mask: var(--check) center / contain no-repeat; mask: var(--check) center / contain no-repeat; }
-.st.accent { background: var(--s1); } .st.warn { background: var(--s2); } .st.good { background: var(--good); } .st.bad { background: var(--bad); }
+.st.accent { background: var(--s1); } .st.warn { background: var(--s2); } .st.good { background: var(--good); } .st.bad { background: var(--bad); -webkit-mask-image: var(--cross); mask-image: var(--cross); }
 .st.idle, .st.run { background: none; -webkit-mask: none; mask: none; border: 1.5px solid var(--faint); }
 .st.run { border-width: 2px; border-top-color: var(--s1); animation: fig-spin .9s linear infinite; }
 .gi { width: 16px; height: 16px; flex: none; background: currentColor; color: var(--muted);
@@ -569,6 +571,51 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   section { padding-top: 88px; }
   .callout { padding: 22px 20px; }
 }
+
+/* Workflow board: a whole study or plan in one figure. Phases run top to bottom (.wf-phase + .wf-body, .wf-gap between);
+   steps are .wf-card in .wf-row (left to right) or .wf-lanes (one column per actor or data set). --c on a card = its lane colour. */
+.wf { display: grid; grid-template-columns: 150px minmax(0, 1fr); column-gap: 30px; min-width: 1000px; }
+.wf-phase { grid-column: 1; position: relative; padding-left: 44px; }
+.wf-phase .n { position: absolute; left: 0; top: 0; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--node); border: 1px solid var(--line); font: 600 13px/1 var(--mono); color: var(--fg); }
+.wf-phase::after { content: ""; position: absolute; left: 16px; top: 40px; bottom: -66px; border-left: 1px dashed var(--line); }
+.wf-phase.last::after { display: none; }
+.wf-phase b { display: block; padding-top: 7px; font: 600 12.5px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .07em; color: var(--fg); }
+.wf-phase small { display: block; margin-top: 8px; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.wf-body { grid-column: 2; min-width: 0; }
+.wf-gap { grid-column: 2; position: relative; height: 74px; display: flex; align-items: center; justify-content: center; }
+.wf-gap::before { content: ""; position: absolute; left: 50%; top: 6px; bottom: 12px; border-left: 1.5px solid var(--edge); }
+.wf-gap::after { content: ""; position: absolute; left: 50%; bottom: 4px; translate: -50% 0; border: 6px solid transparent; border-top: 8px solid var(--edge); border-bottom: 0; }
+.wf-gap span { position: relative; z-index: 1; padding: 4px 12px; background: var(--fig-bg); border: 1px solid var(--line); border-radius: 999px; font: 500 11.5px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.wf-row { display: flex; align-items: stretch; }
+.wf-row > .wf-card { flex: 1 1 0; }
+.wf-row > .wf-card.wide { flex-grow: 1.6; }
+.wf-to { flex: 0 0 40px; position: relative; align-self: center; height: 14px; }
+.wf-to::before { content: ""; position: absolute; left: 6px; right: 11px; top: 50%; border-top: 1.5px solid var(--edge); }
+.wf-to::after { content: ""; position: absolute; right: 4px; top: 50%; translate: 0 -50%; border: 6px solid transparent; border-left: 8px solid var(--edge); border-right: 0; }
+.wf-dn { position: relative; min-height: 40px; }
+.wf-dn::before { content: ""; position: absolute; left: 50%; top: 5px; bottom: 12px; border-left: 1.5px solid var(--edge); }
+.wf-dn::after { content: ""; position: absolute; left: 50%; bottom: 4px; translate: -50% 0; border: 6px solid transparent; border-top: 8px solid var(--edge); border-bottom: 0; }
+.wf-lanes { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr); }
+.wf-lanes > .wf-to { width: 40px; }
+.wf-lane-h { display: flex; align-items: center; gap: 8px; padding-bottom: 12px; font: 500 11.5px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.wf-lane-h i { width: 11px; height: 11px; flex: none; border-radius: 3px; background: var(--c); }
+.wf-card { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 7px; min-width: 0; padding: 13px 15px 14px 20px;
+  background: color-mix(in srgb, var(--c, var(--edge)) 10%, var(--node)); border: 1px solid color-mix(in srgb, var(--c, var(--edge)) 24%, var(--line)); border-radius: 10px; }
+.wf-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--c, var(--edge)); }  /* straight bar, clipped by the card's rounded corners */
+.wf-card li::marker { color: color-mix(in srgb, var(--c, var(--edge)) 75%, var(--faint)); }
+.wf-card .wf-t { font: 600 14px/1.35 var(--sans); color: var(--fg); text-decoration: none; }
+.wf-card a.wf-t:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+.wf-card ul { margin: 0; padding-left: 17px; }
+.wf-card li { margin: 0; font-size: 13px; line-height: 1.45; color: var(--text); }
+.wf-card li + li { margin-top: 4px; }
+.wf-files { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 4px; }
+.wf-files code { font-size: 11.5px; padding: 1px 6px; }
+.wf-card.gate, .wf-card.sealed { border-style: dashed; }
+.wf-card.gate { background: var(--node); }
+.wf-card.sealed { background: color-mix(in srgb, var(--c) 4%, transparent); }
+.wf-card.sealed li { color: var(--muted); }
+.wf-card.freeze { border-color: color-mix(in srgb, var(--s1) 60%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--s1) 14%, transparent); }
+.wf-card .ok { color: var(--good); font-weight: 600; } .wf-card .no { color: var(--bad); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -855,6 +902,47 @@ mark.hl.ping { background: var(--hl-note); outline: 2px solid var(--accent); out
   <figure class="fig fig-chart animate" aria-label="Stockouts per week fall from about 20 to near zero after the pilot starts in week 7.">
     <div class="fig-label">Stockouts per week, before and after the pilot starts.</div>
     <script type="application/json" class="chart-data">{"type":"bar","x":["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12","W13","W14"],"y":{"ticks":3},"marker":{"x":"W7","label":"Pilot starts"},"series":[{"name":"Stockouts","values":[12,20,20,10,10,11,22,3,1,1,0,0,1,0]}]}</script>
+  </figure>
+</section>
+
+<section id="workflow" data-short="Workflow board">
+  <h2>A whole study or plan in one view</h2>
+  <p class="sub">The workflow board: phases top to bottom, step cards with real specifics, lanes for who or what each step may touch, gates, a freeze point and the hand-off between phases.</p>
+  <figure class="fig" aria-label="Sample study: prepare data and an answer key; build on training and development rows while the test rows stay sealed; freeze; then run once and evaluate.">
+    <div class="fig-label">A sample study: build on training and development rows, freeze, then open the sealed test rows once.</div>
+    <div class="fig-legend" style="margin:0 0 30px"><span><i class="lg-sw" style="--c:var(--edge)"></i>All rows</span><span><i class="lg-sw" style="--c:var(--s1)"></i>Training</span><span><i class="lg-sw" style="--c:var(--s2)"></i>Development</span><span><i class="lg-sw" style="--c:var(--s3)"></i>Test</span><span><i class="lg-node ghost"></i>Gate or sealed</span></div>
+    <div class="wf">
+      <div class="wf-phase"><span class="n">1</span><b>Prepare</b><small>No method runs yet.</small></div>
+      <div class="wf-body"><div class="wf-row">
+        <div class="wf-card"><a class="wf-t" href="#workflow">1.1 Get the data</a><ul><li>Source files and column definitions</li><li>Permission to use them</li></ul><div class="wf-files"><code>rows.csv</code></div></div>
+        <span class="wf-to"></span>
+        <div class="wf-card"><a class="wf-t" href="#workflow">1.2 Build the answer key</a><ul><li>Reviewer 1 labels every row</li><li>Reviewer 2 checks disputes</li></ul><div class="wf-files"><code>gold.csv</code></div></div>
+        <span class="wf-to"></span>
+        <div class="wf-card gate"><a class="wf-t" href="#workflow">1.3 Pilot gate</a><ul><li><span class="ok">Enough hard cases:</span> continue</li><li><span class="no">Too few:</span> revise the question</li></ul></div>
+      </div></div>
+      <div class="wf-gap"><span>Rows in three sealed sets</span></div>
+      <div class="wf-phase"><span class="n">2</span><b>Build</b><small>Test rows stay sealed.</small></div>
+      <div class="wf-body">
+        <div class="wf-lanes">
+          <div class="wf-lane-h" style="grid-row:1;grid-column:1;--c:var(--s1)"><i></i>Training rows</div>
+          <div class="wf-lane-h" style="grid-row:1;grid-column:3;--c:var(--s2)"><i></i>Development rows</div>
+          <div class="wf-lane-h" style="grid-row:1;grid-column:5;--c:var(--s3)"><i></i>Test rows</div>
+          <div class="wf-card" style="grid-row:2;grid-column:1;--c:var(--s1)"><a class="wf-t" href="#workflow">2.1 Fit the model</a><ul><li>One logistic regression per field</li><li>Labels are targets, never inputs</li></ul></div>
+          <span class="wf-to" style="grid-row:2;grid-column:2"></span>
+          <div class="wf-card" style="grid-row:2;grid-column:3;--c:var(--s2)"><a class="wf-t" href="#workflow">2.2 Set thresholds</a><ul><li>Most coverage at 95% accuracy or more</li><li>At least 30 accepted</li></ul><div class="wf-files"><code>config.yaml</code></div></div>
+          <div class="wf-card sealed" style="grid-row:2;grid-column:5;--c:var(--s3)"><a class="wf-t" href="#workflow">Sealed until the freeze</a><ul><li>Nothing is tuned on these rows</li></ul></div>
+        </div>
+        <div class="wf-dn"></div>
+        <div class="wf-card freeze" style="--c:var(--s1)"><a class="wf-t" href="#workflow">2.3 Freeze everything</a><ul><li>Data splits, models, thresholds and prompts. Nothing changes after this point.</li></ul></div>
+      </div>
+      <div class="wf-gap"><span>Frozen method</span></div>
+      <div class="wf-phase last"><span class="n">3</span><b>Run and evaluate</b><small>Test rows, once.</small></div>
+      <div class="wf-body"><div class="wf-row">
+        <div class="wf-card" style="--c:var(--s3)"><a class="wf-t" href="#workflow">3.1 Run every method</a><ul><li>Same inputs for all</li><li>Save every output</li></ul><div class="wf-files"><code>predictions.jsonl</code></div></div>
+        <span class="wf-to"></span>
+        <div class="wf-card" style="--c:var(--s3)"><a class="wf-t" href="#workflow">3.2 Score</a><ul><li>Accuracy at equal coverage</li><li>Paired bootstrap, 95% intervals</li></ul></div>
+      </div></div>
+    </div>
   </figure>
 </section>
 

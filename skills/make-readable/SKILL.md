@@ -30,7 +30,7 @@ Turns an explanation into one `.html` file that reads like a long-form blog post
 
 Copy the template with `cp`; don't retype it. Edit only inside `<div class="content">`, plus `<title>`, `{{SHORT_NAME}}` and the `#readable-glossary` block. Leave the `<style>`, rail, navbar, floating UI, notes panel and scripts untouched unless the user asks for a design change.
 
-**Updating a readable that already exists:** edit sections in place. Never regenerate the file from the template, and never touch `<script type="application/json" id="readable-notes">`. That block holds the user's saved highlights, comments, notes and glossary-term notes. Renaming a glossary term orphans the notes kept on it, so keep `term` stable. Highlights and passage references re-anchor to the edited text on their own. Rerun the glossary gate after every edit. If the file predates the glossary, copy the Glossary chip, `#gloss-pop`, `#term-dialog`, `#readable-glossary`, the `--scrim` tokens, the glossary CSS and the glossary script from the template into it. If it predates hover comments or Export, copy `.hl-tip`, `#hl-tip`, `#export-pop`, the Export icon, their CSS (including the 420px navbar rule) and the matching script blocks from the template. If its tooltip is plain text (no `fillTip`) or its Save has no "Saved" feedback (no `writeFile`), copy the `.hl-tip` rules, the hover-tooltip script, the `.notes-panel` `top` offset and the `saved`/`save`/`writeFile` functions from the template.
+**Updating a readable that already exists:** edit sections in place. Never regenerate the file from the template, and never touch `<script type="application/json" id="readable-notes">`. That block holds the user's saved highlights, comments, notes and glossary-term notes. Renaming a glossary term orphans the notes kept on it, so keep `term` stable. Highlights and passage references re-anchor to the edited text on their own. Rerun the glossary gate after every edit. If the file predates the glossary, copy the Glossary chip, `#gloss-pop`, `#term-dialog`, `#readable-glossary`, the `--scrim` tokens, the glossary CSS and the glossary script from the template into it. If it predates hover comments or Export, copy `.hl-tip`, `#hl-tip`, `#export-pop`, the Export icon, their CSS (including the 420px navbar rule) and the matching script blocks from the template. If it has no `.wf` CSS or its `.flow` rows are 22px apart, copy the workflow-board CSS block, the 56px `.flow` gap, the `.st.bad` cross (`--cross`) and the `.wf-` lines of the Markdown `figure()` export from the template. If its tooltip is plain text (no `fillTip`) or its Save has no "Saved" feedback (no `writeFile`), copy the `.hl-tip` rules, the hover-tooltip script, the `.notes-panel` `top` offset and the `saved`/`save`/`writeFile` functions from the template.
 
 ## Page anatomy
 
@@ -59,6 +59,7 @@ The rail, the inline contents and the `h2` numbers are generated from `main sect
 | Rows that fall into groups | Group row | `<tr class="group"><td colspan="N">Group</td></tr>` |
 | Status of an item | Pill | `<span class="pill good|warn|bad">…</span>`, or plain `.pill` for neutral |
 | Numbers that should line up | Tabular figures | `<td class="num">` or `class="tab"` |
+| The whole of a study, project, proposal or plan: phases, steps with their specifics, gates, outputs | A "whole … in one picture" section near the top (usually section 2), built around one workflow board | `<figure class="fig">` with a `.wf` board (figures.md §3); card titles link to the sections that explain each step |
 | Steps, stages, phases or levels in order (3 or more) | Flow figure, never chips with arrows | `<figure class="fig">` with nodes and connectors in a `.flow` (see figures.md); a ladder or maturity scale climbs as a staircase |
 | Dated events in order | Timeline | `<ol class="timeline"><li><time>date · source</time>text</li></ol>`; `li.next` marks open or upcoming items |
 | Exact words someone said or wrote | Blockquote | `<blockquote><p>"…"</p><cite>who, where, date</cite></blockquote>` |
@@ -102,6 +103,9 @@ Every readable has a glossary. It is not part of the content: the terms live in 
    - explains without the term itself or other undefined jargon
    - puts an acronym's expansion in `full`, not in `def`
    - says how the page uses the term when that differs from the textbook meaning
+   - for a named dataset, benchmark, tool or paper, says what one item or input looks like ("movie reviews labeled positive or negative"), so the reader can judge whether it is comparable
+
+The acronym check also fires on all-caps names outside prose code: dataset and benchmark names (MMLU, CLINC150), author initials in the eyebrow, and link text such as "PDF". Define them, or reword ("Full text").
 4. Remove entries for terms the page no longer uses.
 
 `check_html.py` enforces the mechanical half. The block must be valid and non-empty, every all-caps acronym in the content must have an entry, and every entry's term must appear on the page. It skips quoted text (someone else's words) and all-caps styling of a word the page also writes in lower case ("SWARM"). It can't detect jargon; step 1 covers that, and it covers acronyms inside quotes too.
@@ -129,7 +133,7 @@ A figure has to earn its place: it should show something the text can't show as 
 - estimated or incomplete data: never invent or interpolate points to fill a figure.
 
 **Build from primitives, not from examples.** The template ships composable primitives:
-- **Layout:** flow grid with spans, lanes, zones, free canvas, before/after panels.
+- **Layout:** flow grid with spans, lanes, zones, free canvas, before/after panels, workflow board.
 - **Marks:** nodes with status, icons and values; magnitude and range bars; stack; stats; schedule with milestones; quadrant.
 - **Connectors:** highlighted, dashed, labelled, routed.
 - **Annotation:** labels, notes, legends.
@@ -199,4 +203,5 @@ Encoding table, every primitive's markup, connector syntax, charts, ink SVG, mot
 
 - `scripts/check_html.py` checks tag balance, required chrome, sections without an `h2`, duplicate ids, dead anchor links, external resources, leftover `{{placeholders}}`, stray saved `<mark>`s, whether the notes JSON is valid, figure edges that point at missing ids, figures with no `aria-label`, chart JSON (type, labels, value counts), and the glossary: valid and non-empty, every acronym in the content defined, and no entry the page doesn't use.
 - After adding figures, look once at the gallery-style render: chip labels hidden behind nodes, or lines running under nodes, mean the layout needs moving (see figures.md).
+- Measure figure width instead of eyeballing it: at 1440px, every `figure` needs `scrollWidth <= clientWidth`. Flows with five or more columns usually fail.
 - For a visual check, take at most one look. If Playwright is installed, render at 1440×900 in dark mode and at 390×844, and confirm `document.documentElement.scrollWidth === innerWidth` at phone width. Headless Chrome's `--window-size` can't go below about 500px, so use device emulation for phones.
